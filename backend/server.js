@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB-anslutning
-mongoose.connect('mongodb://localhost:27017/Golfstore', {
+mongoose.connect('mongodb://localhost:27017/Your-database-name', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("Connected to MongoDB"))
@@ -23,15 +23,8 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' }
 });
 
-const GolfClubSchema = new mongoose.Schema({
-    brand: String,
-    model: String,
-    price: Number,
-    quantity: Number,
-});
 
 const User = mongoose.model('User', UserSchema);
-const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
 
 // Routes
 // Registrera ny användare
@@ -53,17 +46,17 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Hämta alla golfklubbor för användare
+// Hämta något från databasen, byt ut till rätt collection
 app.get('/user-page', async (req, res) => {
-    const clubs = await GolfClub.find();
-    res.json(clubs);
+    const something = await someCollection.find();
+    res.json(someting);
 });
 
-// Admin - ta bort golfklubb
+// Admin - ta bort något med id
 app.delete('/admin-page/delete/:id', async (req, res) => {
     const { id } = req.params;
-    await GolfClub.findByIdAndDelete(id);
-    res.send('Club deleted');
+    await someCollection.findByIdAndDelete(id);
+    res.send('something deleted');
 });
 
 // Starta server
