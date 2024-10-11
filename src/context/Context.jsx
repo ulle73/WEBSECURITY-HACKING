@@ -9,7 +9,6 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [golfClubs, setGolfClubs] = useState([]);
 
       // Återhämta användardata från localStorage
     useEffect(() => {
@@ -63,28 +62,9 @@ async function register(username, password, role = 'user') {
         localStorage.removeItem('user')
     }
 
-    // Hämta golfklubbor
-    async function fetchGolfClubs() {
-        try {
-            const response = await axios.get('http://localhost:5000/user-page');
-            setGolfClubs(response.data);
-            setError(null);
-        } catch (err) {
-            console.error("Error fetching golf clubs", err);
-            setError('Misslyckades med att hämta golfklubbor. Försök igen.');
-        }
-    }
 
-    // Ta bort golfklubb
-    async function deleteGolfClub(id) {
-        try {
-            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`);
-            setGolfClubs(golfClubs.filter(club => club._id !== id));
-        } catch (err) {
-            console.error("Error deleting golf club", err);
-            setError('Misslyckades med att radera golfklubben. Försök igen.');
-        }
-    }
+
+
 
     // Kontrollera användartillstånd och hämta golfklubbor
     useEffect(() => {
@@ -94,14 +74,10 @@ async function register(username, password, role = 'user') {
         checkUser();
     }, []);
 
-    useEffect(() => {
-        if (user) {
-            fetchGolfClubs();
-        }
-    }, [user]);
+ 
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
             {loading ? <div>Loading...</div> : children}
         </AuthContext.Provider>
     );
