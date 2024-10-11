@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import bcrypt from 'bcrypt'
 
 // Skapa en express-app
 const app = express();
@@ -30,17 +31,30 @@ const User = mongoose.model('User', UserSchema);
 // Registrera ny användare
 app.post('/register', async (req, res) => {
     const { username, password, role } = req.body;
-    const user = new User({ username, password, role });
+
+    // Hasha lösenordet med bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 är antalet "rounds" av hashing
+
+    const user = new User({ username, password: hashedPassword, role });
     await user.save();
     res.send('User registered');
 });
 
+
 // Logga in användare
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username, password });
+    const user = await User.findOne({ username });
+
     if (user) {
-        res.json({ role: user.role, username: user.username });
+        // Jämför det inmatade lösenordet med det hashade lösenordet
+        const match = await bcrypt.compare(password, user.password);
+        
+        if (match) {
+            res.json({ role: user.role, username: user.username });
+        } else {
+            res.status(400).send('Invalid credentials');
+        }
     } else {
         res.status(400).send('Invalid credentials');
     }
