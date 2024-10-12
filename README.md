@@ -1,4 +1,5 @@
-Användar- och Administrationssystem med Hash & Salt samt JWT.
+
+Template LOGIN-REGISTER #3, Hash & Salt with JWT-token.
 
 Detta projekt är en användarautentisering och rollhanteringssystem byggt med Node.js, Express, MongoDB, och React. Systemet använder JSON Web Tokens (JWT) för att autentisera användare och hantera åtkomsträttigheter baserat på roller. Det ger en grundläggande struktur för att skapa en säker och skalbar webbapplikation där användare kan logga in, registrera sig och navigera mellan olika sidor beroende på deras behörighet.
 
