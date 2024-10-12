@@ -1,16 +1,20 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/Context';
-import LogoutButton from './Logout-btn';
+import { Navigate } from 'react-router-dom';
+import LogoutButton from './Logout-btn'
 
 function AdminPage() {
-    const { user, error } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
+
+    // Kontrollera om användaren är inloggad och har rollen 'admin'
+    if (!user || (user.token && user.role !== 'admin')) {
+        return <Navigate to="/" />; // Omdirigera om inte inloggad eller ingen admin-roll
+    }
 
     return (
         <div>
-            <h2>Admin Sida</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-           
-            <LogoutButton/>
+            <h1>Admin-sidan</h1>
+            <LogoutButton />
         </div>
     );
 }

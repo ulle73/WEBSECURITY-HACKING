@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from "jwt-decode"
 
 // Skapa kontext
 export const AuthContext = createContext();
@@ -23,11 +24,11 @@ export function AuthProvider({ children }) {
     async function login(username, password) {
         try {
             const response = await axios.post('http://localhost:5000/login', { username, password });
-            const { role } = response.data; // Se till att detta är rätt och att backend returnerar detta
-            console.log(response.data);
-            
+            const { token } = response.data; // Få token från svaret
+            const decodedToken = jwtDecode(token); // Avkoda JWT-token för att hämta användarinformation
+
             // Spara användardata i kontexten
-            const userData = { username, role }; // Lagra användardata
+            const userData = { username, role: decodedToken.role, token }; // Hämta rollen från avkodad token
             setUser(userData);
 
             // Spara användardata i localStorage

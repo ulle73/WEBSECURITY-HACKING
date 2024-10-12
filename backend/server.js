@@ -1,57 +1,47 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-// Skapa en express-app
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB-anslutning
 mongoose.connect('mongodb://localhost:27017/Your-database-name', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("Connection failed", err));
 
-// Mongoose-scheman
 const UserSchema = new mongoose.Schema({
     username: String,
     password: String,
     role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' }
 });
-
-
 const User = mongoose.model('User', UserSchema);
 
-// Routes
+const SECRET_KEY = 'your-very-secure-secret-key';
+
 // Registrera ny användare
 app.post('/register', async (req, res) => {
     const { username, password, role } = req.body;
-
-    // Hasha lösenordet med bcrypt
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 är antalet "rounds" av hashing
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword, role });
     await user.save();
     res.send('User registered');
 });
 
-
-// Logga in användare
+// Logga in användare och generera JWT-token
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
 
     if (user) {
-        // Jämför det inmatade lösenordet med det hashade lösenordet
         const match = await bcrypt.compare(password, user.password);
-        
         if (match) {
-            res.json({ role: user.role, username: user.username });
+            const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+            res.json({ token, role: user.role });
         } else {
             res.status(400).send('Invalid credentials');
         }
@@ -60,14 +50,48 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Hämta något från databasen, byt ut till rätt collection
-app.get('/user-page', async (req, res) => {
-    const something = await someCollection.find();
-    res.json(someting);
+// Middleware för att verifiera JWT-token
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
+// Middleware för att verifiera admin-roll
+function verifyAdmin(req, res, next) {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+    next(); // Om användaren är admin, gå vidare
+}
+
+// // Skyddad route - endast för inloggade användare
+app.get('/user-page', authenticateToken, async (req, res) => {
+    // Hämta data från databasen
+    //const something = await someCollection.find();
+
+    // Skapa svaret med både datan och meddelandet
+    res.json({
+        message: "Welcome to user page", // Lägg till meddelandet
+       // data: something // Skicka med datan
+    }); 
 });
 
-// Admin - ta bort något med id
-app.delete('/admin-page/delete/:id', async (req, res) => {
+
+app.get('/admin-page', authenticateToken, verifyAdmin, (req, res) => {
+    res.json({ message: "Welcome to admin page!" });
+});
+
+
+// Admin-endpoint - Endast administratörer
+app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send('Access forbidden: Admins only');
     const { id } = req.params;
     await someCollection.findByIdAndDelete(id);
     res.send('something deleted');
