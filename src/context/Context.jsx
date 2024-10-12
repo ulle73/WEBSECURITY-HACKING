@@ -1,6 +1,7 @@
+// Context.jsx
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { jwtDecode } from "jwt-decode"
+import {jwtDecode} from "jwt-decode";
 
 // Skapa kontext
 export const AuthContext = createContext();
@@ -11,71 +12,50 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-      // Återhämta användardata från localStorage
+    // Återhämta användardata från localStorage
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
-        setLoading(false); // Ställ in loading på false efter att ha kontrollerat användardata
+        setLoading(false);
     }, []);
 
     // Logga in användare
     async function login(username, password) {
         try {
             const response = await axios.post('http://localhost:5000/login', { username, password });
-            const { token } = response.data; // Få token från svaret
-            const decodedToken = jwtDecode(token); // Avkoda JWT-token för att hämta användarinformation
+            const { token } = response.data;
+            const decodedToken = jwtDecode(token);
 
-            // Spara användardata i kontexten
-            const userData = { username: decodedToken.username, role: decodedToken.role, token }; // Hämta användarnamn och roll från avkodad token
+            const userData = { username: decodedToken.username, role: decodedToken.role, token };
             setUser(userData);
 
-            // Spara användardata i localStorage
             localStorage.setItem('user', JSON.stringify(userData));
         } catch (err) {
             console.error("Login failed", err);
             setError('Inloggning misslyckades. Kontrollera dina uppgifter.');
-            throw err; // Kasta fel för att fånga det i Login-komponenten
+            throw err;
         }
     }
 
- // Registrera ny användare och logga in automatiskt
-async function register(username, password, role = 'user') {
-    try {
-        // Registrera användaren
-        const response = await axios.post('http://localhost:5000/register', { username, password, role });
-        setError(null);
-
-        // Logga in automatiskt efter registrering
-        await login(username, password); // Logga in med de registrerade uppgifterna
-    } catch (error) {
-        console.error("Registration failed", error);
-        setError('Registrering misslyckades. Försök igen.');
-        throw error;
+    // Registrera ny användare
+    async function register(username, password, role = 'user') {
+        try {
+            await axios.post('http://localhost:5000/register', { username, password, role });
+            await login(username, password);
+        } catch (error) {
+            console.error("Registration failed", error);
+            setError('Registrering misslyckades. Försök igen.');
+            throw error;
+        }
     }
-}
-
 
     // Logga ut användare
     function logout() {
         setUser(null);
-        localStorage.removeItem('user')
+        localStorage.removeItem('user');
     }
-
-
-
-
-
-    // Kontrollera användartillstånd och hämta golfklubbor
-    useEffect(() => {
-        async function checkUser() {
-            setLoading(false);
-        }
-        checkUser();
-    }, []);
-
- 
 
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>

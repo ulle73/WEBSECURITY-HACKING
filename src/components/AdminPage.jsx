@@ -1,4 +1,3 @@
-// AdminPage.jsx
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { Navigate } from 'react-router-dom';
@@ -8,10 +7,16 @@ import axios from 'axios';
 function AdminPage() {
     const { user } = useContext(AuthContext);
     const [isAdmin, setIsAdmin] = useState(null);
-    const [loading, setLoading] = useState(true); // Lägg till en loading state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkAdmin = async () => {
+            if (!user || user.role !== 'admin') {
+                setIsAdmin(false); // Användaren är inte admin, ingen serveranrop
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await axios.get('http://localhost:5000/admin-page', {
                     headers: {
@@ -19,19 +24,17 @@ function AdminPage() {
                     },
                 });
 
-                // Om förfrågan lyckas betyder det att användaren är admin
                 if (response.status === 200) {
-                    setIsAdmin(true);
+                    setIsAdmin(true); // Användaren är admin, tillåt åtkomst
                 }
             } catch (error) {
-                // Om förfrågan misslyckas, sätt isAdmin till false
-                setIsAdmin(false);
+                setIsAdmin(false); // Servern avvisade förfrågan
             } finally {
-                setLoading(false); // Ställ in loading till false oavsett resultat
+                setLoading(false); // Avsluta loading state
             }
         };
 
-        // Kontrollera om användaren är inloggad innan vi gör förfrågan
+        // Kontrollera användarroll
         if (user) {
             checkAdmin();
         } else {
@@ -46,10 +49,10 @@ function AdminPage() {
 
     // Omdirigera om användaren inte är inloggad eller inte är admin
     if (!user || isAdmin === false) {
-        return <Navigate to="/" />;
+        return <Navigate to="/user-page" />;
     }
 
-    // Om vi är inne här, är användaren admin
+    // Om vi är här, är användaren admin
     return (
         <div>
             <h1>Admin-sidan</h1>

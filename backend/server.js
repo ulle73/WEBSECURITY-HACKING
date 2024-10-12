@@ -1,3 +1,4 @@
+// server.js
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -71,31 +72,14 @@ function verifyAdmin(req, res, next) {
     next(); // Om användaren är admin, gå vidare
 }
 
-// // Skyddad route - endast för inloggade användare
+// Skyddad route - endast för inloggade användare
 app.get('/user-page', authenticateToken, async (req, res) => {
-    // Hämta data från databasen
-    //const something = await someCollection.find();
-
-    // Skapa svaret med både datan och meddelandet
-    res.json({
-        message: "Welcome to user page", // Lägg till meddelandet
-       // data: something // Skicka med datan
-    }); 
+    res.json({ message: "Welcome to user page" });
 });
 
-
+// Admin-route - Endast för admin
 app.get('/admin-page', authenticateToken, verifyAdmin, (req, res) => {
     res.json({ message: "Welcome to admin page!" });
 });
 
-
-// Admin-endpoint - Endast administratörer
-app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).send('Access forbidden: Admins only');
-    const { id } = req.params;
-    await someCollection.findByIdAndDelete(id);
-    res.send('something deleted');
-});
-
-// Starta server
 app.listen(5000, () => console.log('Server running on port 5000'));

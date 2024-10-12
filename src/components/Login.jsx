@@ -1,37 +1,32 @@
+// Login.jsx
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-    const { login, error, setError } = useContext(AuthContext);
+    const { login, error } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
-        // setError(null); // Återställ felmeddelande
 
         try {
             await login(username, password);
-            const storedUser = localStorage.getItem('user'); // Hämta sparad användardata
+            const storedUser = localStorage.getItem('user');
 
             if (storedUser) {
-                const { role } = JSON.parse(storedUser); // Hämta rollen
+                const { role } = JSON.parse(storedUser);
                 if (role === 'admin') {
-                    navigate('/admin-page'); // Navigera till adminsidan om rollen är admin
+                    navigate('/admin-page');
                 } else {
-                    navigate('/user-page'); // Navigera till användarsidan annars
+                    navigate('/user-page');
                 }
             }
         } catch (err) {
             console.log(err);
         }
-    }
-
-    // Hantera navigering till registreringssidan
-    function handleRegister() {
-        navigate('/register');
     }
 
     return (
@@ -56,10 +51,9 @@ function Login() {
                         required
                     />
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button type="submit">Logga in</button>
+                {error && <p>{error}</p>}
             </form>
-            <button onClick={handleRegister}>Registrera dig</button> {/* Ny registreringsknapp */}
         </div>
     );
 }
