@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
             const decodedToken = jwtDecode(token); // Avkoda JWT-token för att hämta användarinformation
 
             // Spara användardata i kontexten
-            const userData = { username, role: decodedToken.role, token }; // Hämta rollen från avkodad token
+            const userData = { username: decodedToken.username, role: decodedToken.role, token }; // Hämta användarnamn och roll från avkodad token
             setUser(userData);
 
             // Spara användardata i localStorage
