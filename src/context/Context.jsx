@@ -80,8 +80,13 @@ export function AuthProvider({ children }) {
     // Ta bort golfklubb
     async function deleteGolfClub(id) {
         try {
-            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`);
-            setGolfClubs(golfClubs.filter(club => club._id !== id));
+            const token = user?.token;  // Hämta token från användaren
+            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Skicka med token i Authorization-headern
+                }
+            });
+            setGolfClubs(golfClubs.filter(club => club._id !== id));  // Uppdatera state
         } catch (err) {
             console.error("Error deleting golf club", err);
             setError('Misslyckades med att radera golfklubben. Försök igen.');

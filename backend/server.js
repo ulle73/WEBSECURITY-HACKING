@@ -96,10 +96,14 @@ app.get('/admin-page', authenticateToken, verifyAdmin, async (req, res) => {
 
 
 // Admin - ta bort golfklubb
-app.delete('/admin-page/delete/:id', async (req, res) => {
+app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req, res) => {
     const { id } = req.params;
-    await GolfClub.findByIdAndDelete(id);
-    res.send('Club deleted');
+    try {
+        await GolfClub.findByIdAndDelete(id);
+        res.send('Club deleted');
+    } catch (err) {
+        res.status(500).send('Failed to delete club');
+    }
 });
 
 
