@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [golfClubs, setGolfClubs] = useState([]);
 
     // Återhämta användardata från localStorage
     useEffect(() => {
@@ -56,9 +57,53 @@ export function AuthProvider({ children }) {
         setUser(null);
         localStorage.removeItem('user');
     }
+    
+    
+    // Hämta golfklubbor
+    async function fetchGolfClubs() {
+        try {
+            const token = user?.token; // Hämta token från användardata
+            const response = await axios.get('http://localhost:5000/user-page', {
+                headers: {
+                    Authorization: `Bearer ${token}` // Skicka tokenen i Authorization-headern
+                }
+            });
+            console.log(response)
+            setGolfClubs(response.data.clubs);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching golf clubs", err);
+            setError('Misslyckades med att hämta golfklubbor. Försök igen.');
+        }
+    }
+    
+    // Ta bort golfklubb
+    async function deleteGolfClub(id) {
+        try {
+            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`);
+            setGolfClubs(golfClubs.filter(club => club._id !== id));
+        } catch (err) {
+            console.error("Error deleting golf club", err);
+            setError('Misslyckades med att radera golfklubben. Försök igen.');
+        }
+    }
+    
+    // Kontrollera användartillstånd och hämta golfklubbor
+    useEffect(() => {
+        async function checkUser() {
+            setLoading(false);
+        }
+        checkUser();
+    }, []);
+    
+    useEffect(() => {
+        if (user) {
+            fetchGolfClubs();
+        }
+    }, [user]);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub }}>
             {loading ? <div>Loading...</div> : children}
         </AuthContext.Provider>
     );

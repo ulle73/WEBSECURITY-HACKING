@@ -5,7 +5,7 @@ import LogoutButton from './Logout-btn';
 import axios from 'axios';
 
 function AdminPage() {
-    const { user } = useContext(AuthContext);
+    const { user, golfClubs, deleteGolfClub } = useContext(AuthContext);
     const [isAdmin, setIsAdmin] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -57,6 +57,18 @@ function AdminPage() {
         <div>
             <h1>Admin-sidan</h1>
             <LogoutButton />
+            <h3>Golfklubbar:</h3>
+            <ul>
+                {golfClubs.map(club => (
+                    <li key={club._id}>
+                        {club.brand} {club.model} - {club.price} kr
+                        <button onClick={() => deleteGolfClub(club._id)}>
+                            Ta bort
+                        </button>
+                    </li>
+                ))}
+            </ul>
+            
         </div>
     );
 }

@@ -1,0 +1,12 @@
+[
+    { "brand": "Titleist", "model": "Pro V1", "price": 49.99, "quantity": 15 },
+    { "brand": "Callaway", "model": "Rogue", "price": 59.99, "quantity": 10 },
+    { "brand": "TaylorMade", "model": "Sim", "price": 69.99, "quantity": 8 },
+    { "brand": "Ping", "model": "G425", "price": 79.99, "quantity": 12 },
+    { "brand": "Cobra", "model": "F9", "price": 89.99, "quantity": 5 },
+    { "brand": "Mizuno", "model": "JPX 921", "price": 79.99, "quantity": 20 },
+    { "brand": "Wilson", "model": "D9", "price": 49.99, "quantity": 15 },
+    { "brand": "Srixon", "model": "Z-Star", "price": 39.99, "quantity": 25 },
+    { "brand": "Cleveland", "model": "HB Soft", "price": 89.99, "quantity": 10 },
+    { "brand": "PXG", "model": "0311", "price": 199.99, "quantity": 3 }
+]

@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/Your-database-name', {
+mongoose.connect('mongodb://localhost:27017/Golfstore', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("Connected to MongoDB"))
@@ -20,7 +20,17 @@ const UserSchema = new mongoose.Schema({
     password: String,
     role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' }
 });
+
+const GolfClubSchema = new mongoose.Schema({
+    brand: String,
+    model: String,
+    price: Number,
+    quantity: Number,
+});
+
 const User = mongoose.model('User', UserSchema);
+
+const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
 
 const SECRET_KEY = 'your-very-secure-secret-key';
 
@@ -74,12 +84,23 @@ function verifyAdmin(req, res, next) {
 
 // Skyddad route - endast för inloggade användare
 app.get('/user-page', authenticateToken, async (req, res) => {
-    res.json({ message: "Welcome to user page" });
+      const clubs = await GolfClub.find();
+    res.json({ message: "Welcome to user page", clubs });
 });
 
 // Admin-route - Endast för admin
-app.get('/admin-page', authenticateToken, verifyAdmin, (req, res) => {
-    res.json({ message: "Welcome to admin page!" });
+app.get('/admin-page', authenticateToken, verifyAdmin, async (req, res) => {
+    const clubs = await GolfClub.find();
+    res.json({ message: "Welcome to admin page!", clubs });
 });
+
+
+// Admin - ta bort golfklubb
+app.delete('/admin-page/delete/:id', async (req, res) => {
+    const { id } = req.params;
+    await GolfClub.findByIdAndDelete(id);
+    res.send('Club deleted');
+});
+
 
 app.listen(5000, () => console.log('Server running on port 5000'));
