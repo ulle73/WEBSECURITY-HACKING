@@ -1,0 +1,16 @@
+/* App.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #4f4f4f, #383838, #1b1b1b);
+  font-family: Arial, sans-serif;
+}
+
+

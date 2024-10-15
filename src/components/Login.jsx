@@ -30,31 +30,36 @@ function Login() {
     }
 
     return (
-        <div>
+        <div className="login-container">
             <h2>Logga in</h2>
+            <div className="form-wrapper">
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Användarnamn:</label>
+                <div className="input-wrapper">
                     <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
+                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
                     />
+                    <label className={username ? 'filled' : ''}>Användarnamn</label>
                 </div>
-                <div>
-                    <label>Lösenord:</label>
+                <div className="input-wrapper">
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
                     />
+                    <label className={password ? 'filled' : ''}>Lösenord</label>
                 </div>
                 <button type="submit">Logga in</button>
                 {error && <p>{error}</p>}
             </form>
+            </div>
         </div>
+
     );
 }
 
