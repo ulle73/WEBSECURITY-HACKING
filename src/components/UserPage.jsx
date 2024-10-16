@@ -1,35 +1,41 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { AuthContext } from '../context/Context';
-import axios from 'axios';
 import { Navigate } from 'react-router-dom';
-import LogoutButton from './Logout-btn';
+import { Card, Button, Row, Col } from 'react-bootstrap';
+
 
 function UserPage() {
-    const { user, golfClubs, error } = useContext(AuthContext);
-   
-console.log(golfClubs);
-    // Kontrollera om användaren är inloggad
+    const { user, golfClubs } = useContext(AuthContext);
+
     if (!user) {
-        return <Navigate to="/" />; // Omdirigera till inloggning om användaren inte är inloggad
+        return <Navigate to="/" />;
     }
 
-  
 
     return (
-        <div>
-            <h1>Användarsida</h1>
-            <LogoutButton/>
-           
-    
-            <h3>Golfklubbor</h3>
-            <ul>
+        <div className="container text-center">
+            <h1 className="mb-4">Användar-sida</h1>
+            <Row className="justify-content-center">
                 {golfClubs.map(club => (
-                    <li key={club._id}>
-                        {club.brand} {club.model} - {club.price} kr
-                    </li>
+                    <Col key={club._id} xs={12} sm={6} md={4} lg={3} className="mb-4 d-flex justify-content-center">
+                        <Card style={{ height: '100%', textAlign: 'center', border: '1px solid #ccc' }}>
+                            <Card.Img
+                                style={{ height: '18rem', objectFit: 'cover' }}
+                                variant="top"
+                                src={club.imgUrl}
+                                alt={`${club.brand} ${club.model}`}
+                            />
+                            <Card.Body>
+                                <Card.Title>{club.brand} {club.model}</Card.Title>
+                                <Card.Text>
+                                    Pris: {club.price} kr
+                                </Card.Text>
+
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 ))}
-            </ul>
-           
+            </Row>
         </div>
     );
 }

@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { Navigate } from 'react-router-dom';
-import LogoutButton from './Logout-btn';
+import { Card, Button, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
-
 
 function AdminPage() {
     const { user, golfClubs, deleteGolfClub } = useContext(AuthContext);
@@ -13,7 +12,7 @@ function AdminPage() {
     useEffect(() => {
         const checkAdmin = async () => {
             if (!user || user.role !== 'admin') {
-                setIsAdmin(false); // Användaren är inte admin, ingen serveranrop
+                setIsAdmin(false);
                 setLoading(false);
                 return;
             }
@@ -26,51 +25,57 @@ function AdminPage() {
                 });
 
                 if (response.status === 200) {
-                    setIsAdmin(true); // Användaren är admin, tillåt åtkomst
+                    setIsAdmin(true);
                 }
             } catch (error) {
-                setIsAdmin(false); // Servern avvisade förfrågan
+                setIsAdmin(false);
             } finally {
-                setLoading(false); // Avsluta loading state
+                setLoading(false);
             }
         };
 
-        // Kontrollera användarroll
         if (user) {
             checkAdmin();
         } else {
-            setLoading(false); // Om ingen användare är inloggad, ställ in loading till false
+            setLoading(false);
         }
     }, [user]);
 
-    // Hantera rendering medan vi laddar
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    // Omdirigera om användaren inte är inloggad eller inte är admin
     if (!user || isAdmin === false) {
         return <Navigate to="/user-page" />;
     }
 
-    // Om vi är här, är användaren admin
     return (
-        <Layout>
-        
-                <h2>Admin-sidan</h2>
-                <div className="golf-club-list">
-                    {golfClubs.map(club => (
-                        <div className="golf-club-card" key={club._id}>
-                            <h4>{club.brand} {club.model}</h4>
-                            <p>{club.price} kr</p>
-                            <button onClick={() => deleteGolfClub(club._id)}>
-                                Ta bort
-                            </button>
-                        </div>
-                    ))}
-                </div>
-          
-        </Layout>
+        <div className="container text-center">
+            <h1 className="mb-4">Admin-sidan</h1>
+            <Row className="justify-content-center">
+                {golfClubs.map(club => (
+                    <Col key={club._id} xs={12} sm={6} md={4} lg={3} className="mb-4 d-flex justify-content-center">
+                        <Card style={{ height: '100%', textAlign: 'center', border: '1px solid #ccc' }}>
+                            <Card.Img
+                                style={{ height: '18rem', objectFit: 'cover' }}
+                                variant="top"
+                                src={club.imgUrl}
+                                alt={`${club.brand} ${club.model}`}
+                            />
+                            <Card.Body>
+                                <Card.Title>{club.brand} {club.model}</Card.Title>
+                                <Card.Text>
+                                    Pris: {club.price} kr
+                                </Card.Text>
+                                <Button variant="danger" onClick={() => deleteGolfClub(club._id)}>
+                                    Ta bort
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
+        </div>
     );
 }
 
