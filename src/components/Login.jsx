@@ -2,6 +2,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button, FloatingLabel } from 'react-bootstrap';
 
 function Login() {
     const { login, error } = useContext(AuthContext);
@@ -30,36 +31,38 @@ function Login() {
     }
 
     return (
-        <div className="login-container">
-            <h2>Logga in</h2>
-            <div className="form-wrapper">
-            <form onSubmit={handleSubmit}>
-                <div className="input-wrapper">
-                    <input
+        <Container className="login-container" style={{ maxWidth: '400px', margin: 'auto' }}>
+            <h2 className="text-center mb-4">Logga in</h2>
+            <Form onSubmit={handleSubmit}>
+                <FloatingLabel controlId="floatingUsername" label="Användarnamn" className="mb-3">
+                    <Form.Control
                         type="text"
+                        placeholder="Användarnamn"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                         placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
                     />
-                    <label className={username ? 'filled' : ''}>Användarnamn</label>
-                </div>
-                <div className="input-wrapper">
-                    <input
+                </FloatingLabel>
+
+                <FloatingLabel controlId="floatingPassword" label="Lösenord" className="mb-3">
+                    <Form.Control
                         type="password"
+                        placeholder="Lösenord"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
                     />
-                    <label className={password ? 'filled' : ''}>Lösenord</label>
-                </div>
-                <button type="submit">Logga in</button>
-                {error && <p>{error}</p>}
-            </form>
-            </div>
-        </div>
+                </FloatingLabel>
 
+                <button variant="primary" type="submit" className="w-100">
+                    Logga in
+                </button>
+
+                {error && <p className="text-danger mt-2">{error}</p>}
+            </Form>
+        </Container>
     );
 }
 

@@ -1,27 +1,36 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/Context';
+import axios from 'axios';
 import { Navigate } from 'react-router-dom';
-import Layout from './Layout'; // Importera Layout-komponenten
+import LogoutButton from './Logout-btn';
 
 function UserPage() {
-    const { user, golfClubs } = useContext(AuthContext);
-
+    const { user, golfClubs, error } = useContext(AuthContext);
+   
+console.log(golfClubs);
+    // Kontrollera om användaren är inloggad
     if (!user) {
-        return <Navigate to="/" />; // Omdirigera om inte inloggad
+        return <Navigate to="/" />; // Omdirigera till inloggning om användaren inte är inloggad
     }
 
+  
+
     return (
-        <Layout>
-            <h2>Välkommen till användarsidan!</h2>
-            <div className="golf-club-list">
+        <div>
+            <h1>Användarsida</h1>
+            <LogoutButton/>
+           
+    
+            <h3>Golfklubbor</h3>
+            <ul>
                 {golfClubs.map(club => (
-                    <div className="golf-club-card" key={club._id}>
-                        <h4>{club.brand} {club.model}</h4>
-                        <p>{club.price} kr</p>
-                    </div>
+                    <li key={club._id}>
+                        {club.brand} {club.model} - {club.price} kr
+                    </li>
                 ))}
-            </div>
-        </Layout>
+            </ul>
+           
+        </div>
     );
 }
 

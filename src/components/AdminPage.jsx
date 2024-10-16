@@ -3,7 +3,7 @@ import { AuthContext } from '../context/Context';
 import { Navigate } from 'react-router-dom';
 import LogoutButton from './Logout-btn';
 import axios from 'axios';
-import Layout from './Layout';
+
 
 function AdminPage() {
     const { user, golfClubs, deleteGolfClub } = useContext(AuthContext);

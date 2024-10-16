@@ -1,0 +1,206 @@
+/* #root {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  min-width: fit-content;
+  box-sizing: border-box;
+  height: 100vh;
+    
+} */
+
+html,
+body {
+  height: 100%;
+
+  margin: 0;
+ 
+}
+
+#root {
+  display: flex;
+ 
+  flex-direction: column;
+  
+  min-height: 100vh;
+
+}
+
+.container-fluid {
+  flex: 1;
+ 
+  display: flex;
+  flex-direction: column;
+  
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+h1 {
+  margin: 0;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #21a300;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #197c00;
+}
+
+/* Layout styling */
+.container {
+ width: 100vw;
+ padding: 0px;
+}
+
+header {
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0px;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  margin: 0 auto;
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+  /* Ändra till 100% */
+  
+}
+
+footer {
+  background-color: #21a300;
+  padding: 10px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+ 
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.col {
+  padding-left: 0;
+  padding-right: 0;
+
+}
+
+
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+ 
+  width: 300px;
+ 
+}
+
+input {
+  margin: 10px 0;
+
+  padding: 10px;
+}
+
+button {
+  margin-top: 10px;
+ 
+}
+
+
+/* Ta bort den inbyggda blåa gränsen och outline */
+.floating-label .form-control {
+  border: 1px solid #ced4da;
+  /* Neutral färg för standardgräns */
+  transition: border-color 0.3s ease;
+  /* Mjuk övergång för gränsen */
+outline: none !important;
+  /* Ta bort den inbyggda fokusskuggan */
+}
+
+/* Grön gräns och skugga vid fokus */
+.floating-label .form-control:focus {
+  border-color: #28a745 !important;
+  /* Grön färg */
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+  /* Mjuk grön skugga */
+  outline: none !important;
+  /* Ta bort den blå outline vid fokus */
+}
+
+/* Specifikt för att ta bort blå outline vid fokus */
+.floating-label .form-control:focus-visible {
+  outline: none !important;
+  /* Ta bort den blå outline när fältet är fokuserat */
+}
+
+/* Förbättrad stil för felmeddelanden */
+.text-danger {
+  font-size: 14px;
+ 
+}
+
+input:focus {
+  outline: none !important;
+  /* Ta bort outline från alla input-fält */
+}
+
+input:focus-visible {
+  outline: none !important;
+  /* Ta bort outline från alla input-fält */
+}
+
+
+@media (max-width: 768px) {
+  main {
+    margin: 0 10px;
+  }
+
+  header,
+  footer {
+    padding: 10px;
+  }
+}
