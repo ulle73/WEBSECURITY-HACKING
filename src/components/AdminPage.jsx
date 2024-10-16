@@ -3,6 +3,7 @@ import { AuthContext } from '../context/Context';
 import { Navigate } from 'react-router-dom';
 import LogoutButton from './Logout-btn';
 import axios from 'axios';
+import Layout from './Layout';
 
 function AdminPage() {
     const { user, golfClubs, deleteGolfClub } = useContext(AuthContext);
@@ -54,22 +55,22 @@ function AdminPage() {
 
     // Om vi är här, är användaren admin
     return (
-        <div>
-            <h1>Admin-sidan</h1>
-            <LogoutButton />
-            <h3>Golfklubbar:</h3>
-            <ul>
-                {golfClubs.map(club => (
-                    <li key={club._id}>
-                        {club.brand} {club.model} - {club.price} kr
-                        <button onClick={() => deleteGolfClub(club._id)}>
-                            Ta bort
-                        </button>
-                    </li>
-                ))}
-            </ul>
-            
-        </div>
+        <Layout>
+        
+                <h2>Admin-sidan</h2>
+                <div className="golf-club-list">
+                    {golfClubs.map(club => (
+                        <div className="golf-club-card" key={club._id}>
+                            <h4>{club.brand} {club.model}</h4>
+                            <p>{club.price} kr</p>
+                            <button onClick={() => deleteGolfClub(club._id)}>
+                                Ta bort
+                            </button>
+                        </div>
+                    ))}
+                </div>
+          
+        </Layout>
     );
 }
 

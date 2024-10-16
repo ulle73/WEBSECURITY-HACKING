@@ -1,0 +1,51 @@
+
+
+h1,
+h3 {
+  color: #000000;
+  /* Vit textfärg för rubriker */
+}
+
+.golf-club-list {
+  display: flex;
+  /* Använd flexbox för horisontell layout */
+  overflow-x: auto;
+  /* Gör att listan kan scrollas horisontellt */
+  padding: 10px 0;
+  /* Lite padding runt listan */
+}
+
+.golf-club-card {
+  background-color: #282828;
+  /* Mörk bakgrund för korten */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  margin-right: 20px;
+  /* Avstånd mellan korten */
+  text-align: center;
+  min-width: 200px;
+  /* Minst 200px bredd på korten */
+  transition: transform 0.2s;
+  /* Mjuk övergångseffekt */
+}
+
+.golf-club-card:hover {
+  transform: translateY(-5px);
+  /* Lite uppåt vid hover */
+}
+
+.golf-club-image {
+  width: 100%;
+  /* Full bredd av kortet */
+  height: auto;
+  /* För att hålla bildförhållandet */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.price {
+  font-size: 1.2em;
+  color: #27ae60;
+  /* Grön färg för priset */
+  margin: 10px 0;
+}

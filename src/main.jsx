@@ -5,7 +5,8 @@ import App from './App';
 import { AuthProvider } from './context/Context'; // Se till att sökvägen är korrekt
 import './styles/App.css'
 import './styles/Login-register.css'
-
+import './styles/UserPage.css';
+import './styles/Layout.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

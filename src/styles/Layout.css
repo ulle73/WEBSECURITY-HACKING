@@ -1,0 +1,160 @@
+#layout {
+  display: grid;
+  height: 100vh;
+  width: 100vw;
+  grid-template-areas:
+    "header header header"
+    "navigation main main"
+    "navigation footer footer";
+  grid-template-rows: 100px 1fr 60px;
+  grid-template-columns: 200px 1fr;
+  background-color: #f9f9f9;
+  /* Ljusgrå bakgrund för mjukare känsla */
+}
+
+/* Header */
+#layout>header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Gör så att elementen sprids ut över headern */
+  grid-area: header;
+  background-color: #f9f9f9;
+  /* Vit header */
+  color: #333333;
+  /* Mörk text för kontrast */
+  font-size: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtil skugga för djup */
+  padding: 0 20px;
+  /* Lite extra padding till vänster och höger för att göra det mer luftigt */
+}
+
+/* Centrera h1 */
+#layout>header>div:first-child {
+  flex-grow: 1;
+  /* Gör så att denna div växer för att ta upp utrymme */
+  display: flex;
+  justify-content: center;
+  /* Centrera texten */
+}
+
+/* Navigation (Sidebar) */
+#layout>nav {
+  grid-area: navigation;
+  background-color: #f9f9f9;
+  /* Vit bakgrund för sidopanelen */
+  padding: 10px;
+  /* Minska padding för mer kompakt layout */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Minska gap mellan listobjekt */
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  /* Lätt skugga på sidan */
+}
+
+#layout>nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#layout>nav ul li {
+  margin: 5px 0;
+  /* Minska marginal för mer kompakthet */
+}
+
+#layout>nav ul li a {
+  color: #333333;
+  /* Mörk text för tydlighet */
+  text-decoration: none;
+  font-size: 16px;
+  /* Minska storlek för att passa bättre */
+  font-weight: 500;
+  transition: color 0.3s ease;
+  /* Lugn övergång för hover */
+  padding: 8px;
+  /* Lite padding för klickvänlighet */
+  border-radius: 4px;
+  /* Rundade hörn */
+}
+
+#layout>nav ul li a:hover {
+  color: #007BFF;
+  /* Blå hover-effekt för professionell känsla */
+  background-color: rgba(0, 123, 255, 0.1);
+  /* Ljus bakgrund på hover */
+}
+
+/* Main content */
+#layout>main {
+  grid-area: main;
+  padding: 20px;
+  /* Minska padding för att få en mer sammanhängande känsla */
+  background-color: #ffffff;
+  /* Ljus bakgrund för innehållet */
+  display: flex;
+  flex-direction: column;
+  /* Använd kolumnlayout */
+  justify-content: flex-start;
+  /* Justera innehållet till toppen */
+  align-items: flex-start;
+  /* Justera innehållet till vänster */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Subtil skugga för djup */
+  margin-right: 200px;
+  margin-top: 10px;
+}
+
+/* Footer */
+#layout>footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #007BFF;
+  /* Blå footer för professionell känsla */
+  color: #ffffff;
+  /* Vit textfärg för kontrast */
+  font-size: 14px;
+  padding: 10px;
+  /* Minska padding för att hålla det kompakt */
+  margin-right: 200px;
+}
+
+/* Logout button container */
+.logout-btn-container {
+  margin-left: auto;
+  /* Flyttar logout-knappen till botten av navigeringsfältet */
+  padding-top: 10px;
+  /* Minska padding för att passa bättre */
+}
+
+/* Responsiv layout för små skärmar */
+@media (max-width: 600px) {
+  #layout {
+    grid-template-areas:
+      "header"
+      "main"
+      "navigation"
+      "footer";
+    grid-template-rows: 60px 1fr 40px 60px;
+    grid-template-columns: 1fr;
+  }
+
+  #layout>main {
+    padding: 10px;
+    /* Minska padding för små skärmar */
+  }
+
+  #layout>nav {
+    padding: 5px;
+    /* Minska padding för sidopanelen */
+  }
+
+  #layout>nav ul li a {
+    font-size: 14px;
+    /* Minska fontstorlek för små skärmar */
+  }
+}
