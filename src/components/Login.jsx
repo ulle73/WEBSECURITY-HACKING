@@ -2,6 +2,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button, FloatingLabel } from 'react-bootstrap';
 
 function Login() {
     const { login, error } = useContext(AuthContext);
@@ -30,31 +31,36 @@ function Login() {
     }
 
     return (
-        <div>
-            <h2>Logga in</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Användarnamn:</label>
-                    <input
+        <Container className="login-container" style={{ maxWidth: '400px', margin: 'auto' }}>
+            <h2 className="text-center mb-4">Logga in</h2>
+            <Form onSubmit={handleSubmit}>
+                <FloatingLabel controlId="floatingUsername" label="Användarnamn" className="mb-3">
+                    <Form.Control
                         type="text"
+                        placeholder="Användarnamn"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
-                </div>
-                <div>
-                    <label>Lösenord:</label>
-                    <input
+                </FloatingLabel>
+
+                <FloatingLabel controlId="floatingPassword" label="Lösenord" className="mb-3">
+                    <Form.Control
                         type="password"
+                        placeholder="Lösenord"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                </div>
-                <button type="submit">Logga in</button>
-                {error && <p>{error}</p>}
-            </form>
-        </div>
+                </FloatingLabel>
+
+                <button variant="primary" type="submit" className="w-100">
+                    Logga in
+                </button>
+
+                {error && <p className="text-danger mt-2">{error}</p>}
+            </Form>
+        </Container>
     );
 }
 
