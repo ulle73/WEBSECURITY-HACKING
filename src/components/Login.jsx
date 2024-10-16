@@ -41,7 +41,7 @@ function Login() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
+                        
                     />
                 </FloatingLabel>
 
@@ -52,7 +52,7 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
+                      
                     />
                 </FloatingLabel>
 
