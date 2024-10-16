@@ -10,6 +10,7 @@ function UserPage() {
     if (!user) {
         return <Navigate to="/" />;
     }
+    
 
     return (
         <div className="container text-center">
