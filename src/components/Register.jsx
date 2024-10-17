@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button, FloatingLabel } from 'react-bootstrap';
 
 function Register() {
     const { register, error } = useContext(AuthContext);
@@ -19,35 +20,39 @@ function Register() {
     }
 
     return (
-        <div className="login-container">
-            <h2>Registrera</h2>
-            <div className="form-wrapper">
-            <form onSubmit={handleSubmit}>
-                <div className="input-wrapper">
-                    <input
+        <Container className="login-container" style={{ maxWidth: '400px', margin: 'auto' }}>
+            <h2 className="text-center mb-4">Registrering</h2>
+            <Form onSubmit={handleSubmit}>
+                <FloatingLabel controlId="floatingUsername" label="Användarnamn" className="mb-3">
+                    <Form.Control
                         type="text"
+                        placeholder="Användarnamn"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
+
                     />
-                    <label className={username ? 'filled' : ''}>Användarnamn</label>
-                </div>
-                <div className="input-wrapper">
-                    <input
+                </FloatingLabel>
+
+                <FloatingLabel controlId="floatingPassword" label="Lösenord" className="mb-3">
+                    <Form.Control
                         type="password"
+                        placeholder="Lösenord"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder=" "  // Tomt mellanrum för att aktivera :placeholder-shown
+
                     />
-                    <label className={password ? 'filled' : ''}>Lösenord</label>
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">Registrera</button>
-            </form>
-            </div>
-        </div>
+                </FloatingLabel>
+
+                <button variant="primary" type="submit" className="w-100">
+                    Registrera dig
+                </button>
+
+                {error && <p className="text-danger mt-2">{error}</p>}
+            </Form>
+            <a href="/">Tillbaka</a>
+        </Container>
     );
 }
 

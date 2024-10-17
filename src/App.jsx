@@ -28,7 +28,7 @@ function App() {
                         WebkitTextStroke: '1px white',    // Skapar en svart ram runt texten
                         textAlign: 'center'               // Centrera texten horisontellt
                     }}>
-                        Golf Webshop
+                        Ryd's Golfshop
                     </h1>
                     <button onClick={logout}>Logout</button>
                 </header>
@@ -43,7 +43,7 @@ function App() {
                 </main>
 
                 <footer>
-                    <p>Golf Webshop © 2024</p>
+                    <p>Ryd's Golfshop © 2024</p>
                 </footer>
             </div>
         );

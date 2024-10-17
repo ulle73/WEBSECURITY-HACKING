@@ -62,6 +62,7 @@ function Login() {
 
                 {error && <p className="text-danger mt-2">{error}</p>}
             </Form>
+            <a href="/register">Registrera dig här!</a>
         </Container>
     );
 }
