@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/Context';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Card, Button, Row, Col } from 'react-bootstrap';
 
 
@@ -25,13 +25,12 @@ function UserPage() {
                                 src={club.imgUrl}
                                 alt={`${club.brand} ${club.model}`}
                             />
-                            <Card.Body>
-                                <Card.Title>{club.brand} {club.model}</Card.Title>
-                                <Card.Text>
-                                    Pris: {club.price} kr
-                                </Card.Text>
-                        
-                            </Card.Body>
+                            <Link to={`/club/${club._id}`} style={{ textDecoration: 'none' }}>
+                                <Card.Body>
+                                    <Card.Title>{club.brand} {club.model}</Card.Title>
+                                    <Card.Text>Pris: {club.price} kr</Card.Text>
+                                </Card.Body>
+                            </Link>
                         </Card>
                     </Col>
                 ))}

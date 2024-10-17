@@ -6,6 +6,7 @@ import Register from './components/Register';
 import UserPage from './screens/UserPage';
 import AdminPage from './screens/AdminPage';
 import backgroundImage from './assets/image.png'
+import ClubDetails from './screens/ClubDetails'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
                         <Route path="/" element={<Navigate to={role === 'admin' ? '/admin-page' : '/user-page'} />} />
                         <Route path="/user-page" element={<UserPage />} />
                         {role === 'admin' && <Route path="/admin-page" element={<AdminPage />} />}
+                        <Route path="/club/:clubId" element={<ClubDetails />} />
                         <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                 </main>

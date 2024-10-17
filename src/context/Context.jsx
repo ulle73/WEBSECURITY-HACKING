@@ -93,6 +93,9 @@ export function AuthProvider({ children }) {
         }
     }
     
+    
+   
+    
     // Kontrollera användartillstånd och hämta golfklubbor
     useEffect(() => {
         async function checkUser() {
