@@ -94,7 +94,25 @@ export function AuthProvider({ children }) {
     }
     
     
-   
+    const handleReviewSubmit = async (clubId, review, onReviewSubmitted) => {
+        console.log(`Recension för klubba med ID ${clubId}: ${review}`);
+
+        try {
+            const token = user?.token;  // Hämta token från localStorage
+            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Hämta uppdaterade golfklubbar efter inskickning
+            await fetchGolfClubs();  // Anropar funktionen för att hämta de senaste golfklubbarna
+
+            onReviewSubmitted();  // Eventuellt uppdatera UI efter inskick
+        } catch (error) {
+            console.error('Failed to submit review:', error);
+        }
+    };
+
+
     
     // Kontrollera användartillstånd och hämta golfklubbor
     useEffect(() => {
@@ -109,9 +127,11 @@ export function AuthProvider({ children }) {
             fetchGolfClubs();
         }
     }, [user]);
+    
+ 
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
             {loading ? <div>Loading...</div> : children}
         </AuthContext.Provider>
     );

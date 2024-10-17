@@ -40,7 +40,7 @@ function App() {
                 </main>
 
                 <footer>
-                    <p>Ryd's Golfshop © 2024</p>
+                    <p className='footer-text'>Ryd's Golfshop © 2024</p>
                 </footer>
             </div>
         );
@@ -69,7 +69,7 @@ function App() {
             </main>
 
             <footer>
-                <p>Golf Webshop © 2024</p>
+                <p className='footer-text'>Golf Webshop © 2024</p>
             </footer>
         </div>
     );

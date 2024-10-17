@@ -26,6 +26,11 @@ const GolfClubSchema = new mongoose.Schema({
     model: String,
     price: Number,
     quantity: Number,
+    reviews: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // Hänvisning till användaren som skrev recensionen
+        review: String,  // Själva recensionen
+        date: { type: Date, default: Date.now }  // Datum för när recensionen skapades
+    }]
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -51,7 +56,7 @@ app.post('/login', async (req, res) => {
     if (user) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-            const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+            const token = jwt.sign({ _id: user._id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
             res.json({ token, role: user.role });
         } else {
             res.status(400).send('Invalid credentials');
@@ -103,6 +108,32 @@ app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req,
         res.send('Club deleted');
     } catch (err) {
         res.status(500).send('Failed to delete club');
+    }
+});
+
+// Route för att lägga till recension till en golfklubba
+app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
+    const { clubId } = req.params;
+    const { review } = req.body;
+
+    try {
+        const club = await GolfClub.findById(clubId);
+        if (!club) {
+            return res.status(404).send('Golfklubba hittades inte');
+        }
+
+        // Lägga till recensionen
+        club.reviews.push({
+            user: req.user._id,  // ID på den inloggade användaren
+            review: review
+        });
+
+        // Spara uppdaterad klubb med recension
+        await club.save();
+
+        res.status(201).send('Recension tillagd');
+    } catch (err) {
+        res.status(500).send('Ett fel inträffade när recensionen lades till');
     }
 });
 
