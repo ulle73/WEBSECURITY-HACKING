@@ -51,7 +51,7 @@ function Register() {
 
                 {error && <p className="text-danger mt-2">{error}</p>}
             </Form>
-            <a href="/">Tillbaka</a>
+            <a href="/">Tillbaka till login</a>
         </Container>
     );
 }

@@ -21,13 +21,8 @@ function App() {
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center',
                }}>
-                    <h1 style={{
-                        fontWeight: 800,
-                        fontSize: '5rem',
-                        color: 'transparent',             // Gör texten genomskinlig
-                        WebkitTextStroke: '1px white',    // Skapar en svart ram runt texten
-                        textAlign: 'center'               // Centrera texten horisontellt
-                    }}>
+                    <h1 className="header-h1"  >  
+                 
                         Ryd's Golfshop
                     </h1>
                     <button onClick={logout}>Logout</button>
@@ -57,14 +52,8 @@ function App() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}>
-                <h1 style={{
-                    fontWeight: 800,
-                    fontSize: '5rem',
-                    color: 'transparent',             // Gör texten genomskinlig
-                    WebkitTextStroke: '1px white',    // Skapar en svart ram runt texten
-                    textAlign: 'center'               // Centrera texten horisontellt
-                }}>
-                    Golf Webshop
+                <h1 className="header-h1" >
+                    Ryd's Golfshop
                 </h1>
                
             </header>
