@@ -94,23 +94,24 @@ export function AuthProvider({ children }) {
     }
     
     
-    const handleReviewSubmit = async (clubId, review, onReviewSubmitted) => {
-        console.log(`Recension för klubba med ID ${clubId}: ${review}`);
+    const handleReviewSubmit = async (clubId, { review, rating }) => {
+        console.log(`Recension för klubba med ID ${clubId}: ${review}, betyg: ${rating}`);
 
         try {
             const token = user?.token;  // Hämta token från localStorage
-            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review }, {
+            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review, rating }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Hämta uppdaterade golfklubbar efter inskickning
             await fetchGolfClubs();  // Anropar funktionen för att hämta de senaste golfklubbarna
 
-            onReviewSubmitted();  // Eventuellt uppdatera UI efter inskick
+           
         } catch (error) {
             console.error('Failed to submit review:', error);
         }
     };
+
 
 
     

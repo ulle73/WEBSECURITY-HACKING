@@ -261,9 +261,9 @@
 }
 
 .review-list{
-  width: 70%;
+  width: 50%;
   margin: auto;
-  
+  margin-top: 6px;
 }
 
 .review-card{
@@ -279,9 +279,9 @@ margin: auto;
 /* Stil för recensionstext */
 .review-text {
   font-size: 0.9rem;
-  /* Minska textstorlek */
-  margin-bottom: 0.5rem;
-  /* Avstånd under text */
+ padding: 0px;
+ position: relative;
+ top: 10px;
 }
 
 /* Stil för datumet */

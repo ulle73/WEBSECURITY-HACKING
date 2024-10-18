@@ -31,6 +31,7 @@ const GolfClubSchema = new mongoose.Schema({
     reviews: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // Hänvisning till användaren som skrev recensionen
         review: String,  // Själva recensionen
+         rating: { type: Number, required: true },
         date: { type: Date, default: Date.now }  // Datum för när recensionen skapades
     }]
 });
@@ -128,17 +129,17 @@ app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req,
 });
 
 // Route för att lägga till recension till en golfklubba
+// Route för att lägga till recension till en golfklubba
 app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     const { clubId } = req.params;
-    let { review } = req.body;
-    
-    
-    //sanering av skadlig kod
-  if (validator.isEmpty(review)) {
-    return res.status(400).send('Recensionen får inte vara tom');
-  }
-  
-  review = validator.escape(review);
+    let { review, rating } = req.body;
+
+    // Sanering av skadlig kod
+    if (validator.isEmpty(review) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return res.status(400).send('Recensionen får inte vara tom och betyget måste vara mellan 1 och 5');
+    }
+
+    review = validator.escape(review);
 
     try {
         const club = await GolfClub.findById(clubId);
@@ -148,8 +149,9 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
 
         // Lägga till recensionen
         club.reviews.push({
-            user: req.user._id,  // ID på den inloggade användaren
-            review: review
+            user: req.user._id, // ID på den inloggade användaren
+            review: review,
+            rating: rating // Spara betyget
         });
 
         // Spara uppdaterad klubb med recension
@@ -157,9 +159,11 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
 
         res.status(201).send('Recension tillagd');
     } catch (err) {
+        console.error('Error while adding review:', err); // Logga felet i servern
         res.status(500).send('Ett fel inträffade när recensionen lades till');
     }
 });
+
 
 
 app.listen(5000, () => console.log('Server running on port 5000'));
