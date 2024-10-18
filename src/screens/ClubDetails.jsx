@@ -47,6 +47,7 @@ function ClubDetails() {
             </div>
           </Col>
         </Row>
+        {/* <div className="line"></div> */}
         <Row className="mt-4">
           <Col style={{alignItems: 'center'}}>
             <ReviewBox clubId={club._id} />
