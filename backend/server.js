@@ -4,10 +4,12 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import validator from 'validator';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 
 mongoose.connect('mongodb://localhost:27017/Golfstore', {
     useNewUrlParser: true,
@@ -114,7 +116,15 @@ app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req,
 // Route för att lägga till recension till en golfklubba
 app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     const { clubId } = req.params;
-    const { review } = req.body;
+    let { review } = req.body;
+    
+    
+    //sanering av skadlig kod
+  if (validator.isEmpty(review)) {
+    return res.status(400).send('Recensionen får inte vara tom');
+  }
+  
+  review = validator.escape(review);
 
     try {
         const club = await GolfClub.findById(clubId);
