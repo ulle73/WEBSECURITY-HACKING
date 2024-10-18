@@ -257,9 +257,14 @@
   overflow-y: auto;
   /* Låt recensionerna scrolla */
   max-height: 300px;
-  /* Maxhöjd för recensionerna */
+
 }
 
+.review-list{
+  width: 70%;
+  margin: auto;
+  
+}
 
 .review-card{
   border: none!important;
@@ -267,7 +272,7 @@
 
 .line{
   border-bottom: 1px solid #dddddd;
-  /* Låt en gren rita under */
+margin: auto;
 }
 
 /* Stil för recensionstext */
