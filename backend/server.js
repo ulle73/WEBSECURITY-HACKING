@@ -43,7 +43,12 @@ const SECRET_KEY = 'your-very-secure-secret-key';
 
 // Registrera ny användare
 app.post('/register', async (req, res) => {
-    const { username, password, role } = req.body;
+    let { username, password, role } = req.body;
+    
+      // Sanera användarnamn och roll
+    username = validator.escape(username);
+    role = validator.escape(role);
+    
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword, role });
     await user.save();
@@ -52,7 +57,11 @@ app.post('/register', async (req, res) => {
 
 // Logga in användare och generera JWT-token
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+    
+        // Sanera användarnamn
+    username = validator.escape(username);
+    
     const user = await User.findOne({ username });
 
     if (user) {
@@ -105,6 +114,11 @@ app.get('/admin-page', authenticateToken, verifyAdmin, async (req, res) => {
 // Admin - ta bort golfklubb
 app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req, res) => {
     const { id } = req.params;
+    
+     if (!validator.isMongoId(id)) {
+        return res.status(400).send('Ogiltigt id-format');
+    }
+    
     try {
         await GolfClub.findByIdAndDelete(id);
         res.send('Club deleted');
