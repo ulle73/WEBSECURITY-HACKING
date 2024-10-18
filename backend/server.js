@@ -46,8 +46,14 @@ const SECRET_KEY = 'your-very-secure-secret-key';
 app.post('/register', async (req, res) => {
     let { username, password, role } = req.body;
     
-      // Sanera användarnamn och roll
+     // Sanera användarnamn med escape()
     username = validator.escape(username);
+
+    // Tillåt specifika tecken som <3 genom att först unescape och sedan whitelist
+    username = validator.unescape(username);
+    username = validator.whitelist(username, 'a-zA-Z0-9<3\\s'); // Tillåt bokstäver, siffror, mellanslag och <3
+
+    // Sanera roll
     role = validator.escape(role);
     
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -60,8 +66,12 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     let { username, password } = req.body;
     
-        // Sanera användarnamn
+   // Sanera användarnamn med escape()
     username = validator.escape(username);
+
+    // Tillåt specifika tecken som <3 genom unescape och whitelist
+    username = validator.unescape(username);
+    username = validator.whitelist(username, 'a-zA-Z0-9<3\\s');
     
     const user = await User.findOne({ username });
 
@@ -129,17 +139,21 @@ app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req,
 });
 
 // Route för att lägga till recension till en golfklubba
-// Route för att lägga till recension till en golfklubba
 app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     const { clubId } = req.params;
     let { review, rating } = req.body;
 
-    // Sanering av skadlig kod
+    // Validering av inmatning
     if (validator.isEmpty(review) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
         return res.status(400).send('Recensionen får inte vara tom och betyget måste vara mellan 1 och 5');
     }
 
+    // Sanera recension med escape()
     review = validator.escape(review);
+
+    // Tillåt specifika tecken som <3 genom unescape och whitelist
+    review = validator.unescape(review);
+    review = validator.whitelist(review, 'a-zA-Z0-9<3\\s'); // Tillåt bokstäver, siffror, mellanslag och <3
 
     try {
         const club = await GolfClub.findById(clubId);
