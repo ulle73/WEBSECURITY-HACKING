@@ -42,16 +42,18 @@ const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
 
 const SECRET_KEY = 'your-very-secure-secret-key';
 
+function sanitizeInput(input) {
+    // Ta bort farliga taggar som <script>
+       input = input.replace(/<script.*?>.*?<\/script>/gi, '');
+    // Tillåt <, >, &, och allt annat som är alfanumeriskt
+    return validator.whitelist(input, '<>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
+}
+
 // Registrera ny användare
 app.post('/register', async (req, res) => {
     let { username, password, role } = req.body;
     
-     // Sanera användarnamn med escape()
-    username = validator.escape(username);
-
-    // Tillåt specifika tecken som <3 genom att först unescape och sedan whitelist
-    username = validator.unescape(username);
-    username = validator.whitelist(username, 'a-zA-Z0-9<3\\s'); // Tillåt bokstäver, siffror, mellanslag och <3
+     username = sanitizeInput(username); 
 
     // Sanera roll
     role = validator.escape(role);
@@ -66,12 +68,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     let { username, password } = req.body;
     
-   // Sanera användarnamn med escape()
-    username = validator.escape(username);
-
-    // Tillåt specifika tecken som <3 genom unescape och whitelist
-    username = validator.unescape(username);
-    username = validator.whitelist(username, 'a-zA-Z0-9<3\\s');
+     username = sanitizeInput(username); 
     
     const user = await User.findOne({ username });
 
@@ -143,19 +140,21 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     const { clubId } = req.params;
     let { review, rating } = req.body;
 
-    // Validering av inmatning
+   
+
+    
+    
+
+  
+    try {
+        
+         // Validering av inmatning
     if (validator.isEmpty(review) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
         return res.status(400).send('Recensionen får inte vara tom och betyget måste vara mellan 1 och 5');
     }
-
-    // Sanera recension med escape()
-    review = validator.escape(review);
-
-    // Tillåt specifika tecken som <3 genom unescape och whitelist
-    review = validator.unescape(review);
-    review = validator.whitelist(review, 'a-zA-Z0-9<3\\s'); // Tillåt bokstäver, siffror, mellanslag och <3
-
-    try {
+    
+     review = sanitizeInput(review);
+     
         const club = await GolfClub.findById(clubId);
         if (!club) {
             return res.status(404).send('Golfklubba hittades inte');
