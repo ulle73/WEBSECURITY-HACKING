@@ -46,7 +46,7 @@ function sanitizeInput(input) {
     // Ta bort farliga taggar som <script>
        input = input.replace(/<script.*?>.*?<\/script>/gi, '');
     // Tillåt <, >, &, och allt annat som är alfanumeriskt
-    return validator.whitelist(input, '<>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
+    return validator.whitelist(input, ' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
 }
 
 // Registrera ny användare

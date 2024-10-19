@@ -7,6 +7,7 @@ import UserPage from './screens/UserPage';
 import AdminPage from './screens/AdminPage';
 import backgroundImage from './assets/image.png'
 import ClubDetails from './screens/ClubDetails'
+import backgroundImage2 from './assets/golf4.jpg'
 
 
 function App() {
@@ -17,8 +18,9 @@ function App() {
         return (
             <div  className="container-fluid">
                 <header style={{ 
-                height: '12rem', 
-                backgroundImage: `url(${backgroundImage})`,  // Använd bilden här
+                height: '15rem', 
+                // backgroundImage: `url(${backgroundImage})`,  // Använd bilden här
+                backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center',
                }}>
@@ -49,7 +51,7 @@ function App() {
     return (
         <div className="container-fluid">
             <header style={{
-                height: '12rem',
+                height: '15rem',
                 backgroundImage: `url(${backgroundImage})`,  // Använd bilden här
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
