@@ -28,7 +28,7 @@ function App() {
                  
                         Ryd's Golfshop
                     </h1>
-                    <button onClick={logout}>Logout</button>
+                    <button style={{ transform: 'scale(0.75)' }} className='button-71' role="button"  onClick={logout}>Logout</button>
                 </header>
 
                 <main>
@@ -71,7 +71,7 @@ function App() {
             </main>
 
             <footer>
-                <p className='footer-text'>Golf Webshop © 2024</p>
+                <p className='footer-text'>Ryd's Golfshop © 2024</p>
             </footer>
         </div>
     );

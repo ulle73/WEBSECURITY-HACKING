@@ -56,7 +56,7 @@ function Login() {
                     />
                 </FloatingLabel>
 
-                <button variant="primary" type="submit" className="w-100">
+                <button variant="primary" type="submit" className="w-100 button-71">
                     Logga in
                 </button>
 

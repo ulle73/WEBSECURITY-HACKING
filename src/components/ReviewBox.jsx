@@ -53,7 +53,7 @@ function ReviewBox({ clubId }) {
           />
         </div>
 
-        <button type="submit" className="review-button" disabled={submitted}>
+        <button type="submit" className="review-button button-71" disabled={submitted}>
           {submitted ? 'Recension skickad!' : 'Skicka recension'}
         </button>
       </form>

@@ -40,9 +40,9 @@ function ClubDetails() {
               <p><strong>Pris:</strong> {club.price} kr</p>
               <p><strong>Beskrivning:</strong> {club.description}</p>
               <div>
-                <Button variant="primary" className="mt-3">
+                <button variant="primary" style={{ transform: 'scale(0.75)' }} className="mt-3 button-71">
                   Lägg till i varukorgen
-                </Button>
+                </button>
               </div>
             </div>
           </Col>
