@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser'; // För att hantera cookies
 import validator from 'validator';
 import rateLimit from 'express-rate-limit';
+import zxcvbn from 'zxcvbn';
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // Tillåt CORS med credentials
@@ -68,18 +69,31 @@ function sanitizeInput(input) {
 app.post('/register', async (req, res) => {
     let { username, password, role } = req.body;
 
+    // Sanera användarnamn och roll
     username = sanitizeInput(username);
     role = validator.escape(role);
 
+    // Kontrollera om lösenordet är minst 8 tecken
     if (!validator.isLength(password, { min: 8 })) {
         return res.status(400).send('Lösenordet måste vara minst 8 tecken.');
     }
 
+    // Använd zxcvbn för att kontrollera lösenordets styrka
+    const passwordStrength = zxcvbn(password);
+
+    // Om lösenordet är för svagt, eller för vanligt, avvisa det
+    if (passwordStrength.score < 3) {  // 0-4 där 3-4 är bra
+        return res.status(400).send('Lösenordet är för svagt eller vanligt. Använd ett starkare lösenord.');
+    }
+
+    // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword, role });
     await user.save();
+
     res.send('User registered');
 });
+
 
 // Logga in användare och generera JWT-token
 app.post('/login', loginLimiter, async (req, res) => {
