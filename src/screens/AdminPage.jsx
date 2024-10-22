@@ -19,9 +19,7 @@ function AdminPage() {
 
             try {
                 const response = await axios.get('http://localhost:5000/admin-page', {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
+                    withCredentials: true,  // Skicka cookies automatiskt
                 });
 
                 if (response.status === 200) {
@@ -52,7 +50,7 @@ function AdminPage() {
     return (
         <div className="container text-center">
             <h1 className="mb-4">Admin-sidan</h1>
-            <Row  className="justify-content-center">
+            <Row className="justify-content-center">
                 {golfClubs.map(club => (
                     <Col key={club._id} xs={12} sm={6} md={4} lg={3} className="mb-4 d-flex justify-content-center">
                         <Card style={{ height: '100%', textAlign: 'center', border: '1px solid #ccc' }}>
@@ -63,15 +61,15 @@ function AdminPage() {
                                 alt={`${club.brand} ${club.model}`}
                             />
                             <Link to={`/club/${club._id}`} style={{ textDecoration: 'none' }}>
-                            <Card.Body>
-                                <Card.Title>{club.brand} {club.model}</Card.Title>
-                                <Card.Text>
-                                    Pris: {club.price} kr
-                                </Card.Text>
-                                <Button variant="danger" onClick={() => deleteGolfClub(club._id)}>
-                                    Ta bort
-                                </Button>
-                            </Card.Body>
+                                <Card.Body>
+                                    <Card.Title>{club.brand} {club.model}</Card.Title>
+                                    <Card.Text>
+                                        Pris: {club.price} kr
+                                    </Card.Text>
+                                    <Button variant="danger" onClick={() => deleteGolfClub(club._id)}>
+                                        Ta bort
+                                    </Button>
+                                </Card.Body>
                             </Link>
                         </Card>
                     </Col>

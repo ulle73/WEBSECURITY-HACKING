@@ -13,26 +13,34 @@ export function AuthProvider({ children }) {
     const [error, setError] = useState(null);
     const [golfClubs, setGolfClubs] = useState([]);
 
-    // Återhämta användardata från localStorage
+    // Återhämta användardata från cookies
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/user-page', { withCredentials: true });
+                const { user } = response.data; // Nu returneras användardata
+                if (user) {
+                    setUser(user); // Sätt användarens data i state
+                }
+            } catch (err) {
+                console.error("Failed to retrieve user from cookies", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
     }, []);
 
     // Logga in användare
     async function login(username, password) {
         try {
-            const response = await axios.post('http://localhost:5000/login', { username, password });
-            const { token } = response.data;
-            const decodedToken = jwtDecode(token);
+            const response = await axios.post('http://localhost:5000/login', { username, password }, { withCredentials: true });
+            const { role } = response.data;
 
-            const userData = { username: decodedToken.username, role: decodedToken.role, token };
+            const userData = { username, role };
             setUser(userData);
 
-            localStorage.setItem('user', JSON.stringify(userData));
         } catch (err) {
             console.error("Login failed", err);
             setError('Inloggning misslyckades. Kontrollera dina uppgifter.');
@@ -44,7 +52,7 @@ export function AuthProvider({ children }) {
     async function register(username, password, role = 'user') {
         try {
             await axios.post('http://localhost:5000/register', { username, password, role });
-            await login(username, password);
+            await login(username, password); // Automatisk inloggning efter registrering
         } catch (error) {
             console.error("Registration failed", error);
             setError('Registrering misslyckades. Försök igen.');
@@ -53,22 +61,20 @@ export function AuthProvider({ children }) {
     }
 
     // Logga ut användare
-    function logout() {
-        setUser(null);
-        localStorage.removeItem('user');
+    async function logout() {
+        try {
+            await axios.post('http://localhost:5000/logout', {}, { withCredentials: true });
+            setUser(null);
+        } catch (error) {
+            console.error("Logout failed", error);
+            setError('Misslyckades med att logga ut.');
+        }
     }
-    
-    
+
     // Hämta golfklubbor
     async function fetchGolfClubs() {
         try {
-            const token = user?.token; // Hämta token från användardata
-            const response = await axios.get('http://localhost:5000/user-page', {
-                headers: {
-                    Authorization: `Bearer ${token}` // Skicka tokenen i Authorization-headern
-                }
-            });
-            console.log(response)
+            const response = await axios.get('http://localhost:5000/user-page', { withCredentials: true });
             setGolfClubs(response.data.clubs);
             setError(null);
         } catch (err) {
@@ -76,45 +82,30 @@ export function AuthProvider({ children }) {
             setError('Misslyckades med att hämta golfklubbor. Försök igen.');
         }
     }
-    
+
     // Ta bort golfklubb
     async function deleteGolfClub(id) {
         try {
-            const token = user?.token;  // Hämta token från användaren
-            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}` // Skicka med token i Authorization-headern
-                }
-            });
+            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`, { withCredentials: true });
             setGolfClubs(golfClubs.filter(club => club._id !== id));  // Uppdatera state
         } catch (err) {
             console.error("Error deleting golf club", err);
             setError('Misslyckades med att radera golfklubben. Försök igen.');
         }
     }
-    
-    
-    const handleReviewSubmit = async (clubId, { review, rating }) => {
-        console.log(`Recension för klubba med ID ${clubId}: ${review}, betyg: ${rating}`);
 
+    // Skicka recension
+    const handleReviewSubmit = async (clubId, { review, rating }) => {
         try {
-            const token = user?.token;  // Hämta token från localStorage
-            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review, rating }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review, rating }, { withCredentials: true });
 
             // Hämta uppdaterade golfklubbar efter inskickning
             await fetchGolfClubs();  // Anropar funktionen för att hämta de senaste golfklubbarna
-
-           
         } catch (error) {
             console.error('Failed to submit review:', error);
         }
     };
 
-
-
-    
     // Kontrollera användartillstånd och hämta golfklubbor
     useEffect(() => {
         async function checkUser() {
@@ -122,14 +113,12 @@ export function AuthProvider({ children }) {
         }
         checkUser();
     }, []);
-    
+
     useEffect(() => {
         if (user) {
             fetchGolfClubs();
         }
     }, [user]);
-    
- 
 
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
