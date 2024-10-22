@@ -5,6 +5,7 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,9 @@ mongoose.connect('mongodb://localhost:27017/Golfstore', {
 const UserSchema = new mongoose.Schema({
     username: String,
     password: String,
-    role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' }
+    role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' },
+       loginAttempts: { type: Number, default: 0 },
+    lockUntil: { type: String }
 });
 
 const GolfClubSchema = new mongoose.Schema({
@@ -36,9 +39,29 @@ const GolfClubSchema = new mongoose.Schema({
     }]
 });
 
+// Funktion för att kontrollera om användaren är låst
+UserSchema.methods.isLocked = function () {
+    // Om lockUntil är en sträng, konvertera den till en tidsstämpel
+    const lockUntilDate = new Date(this.lockUntil).getTime();
+    return this.lockUntil && lockUntilDate > Date.now();
+};
+
 const User = mongoose.model('User', UserSchema);
 
 const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
+
+
+
+// Brute force-skydd: max antal misslyckade försök innan blockering
+const MAX_LOGIN_ATTEMPTS = 3;
+const LOCK_TIME = 1 * 60 * 15 * 1000; 
+
+// Rate limiting för login-försök
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minuter
+    max: 5, // Max 5 försök per IP inom 15 minuter
+    message: 'För många inloggningsförsök, vänligen försök igen senare.'
+});
 
 const SECRET_KEY = 'your-very-secure-secret-key';
 
@@ -65,23 +88,47 @@ app.post('/register', async (req, res) => {
 });
 
 // Logga in användare och generera JWT-token
-app.post('/login', async (req, res) => {
+app.post('/login', loginLimiter,  async (req, res) => {
     let { username, password } = req.body;
     
      username = sanitizeInput(username); 
     
     const user = await User.findOne({ username });
+    
+     if (!user) {
+        return res.status(400).send('Invalid credentials');
+    }
+    
+       // Kontrollera om kontot är låst
+    if (user.isLocked()) {
+        return res.status(403).send('Account locked. Please try again later.');
+    }
 
-    if (user) {
-        const match = await bcrypt.compare(password, user.password);
-        if (match) {
-            const token = jwt.sign({ _id: user._id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
-            res.json({ token, role: user.role });
-        } else {
-            res.status(400).send('Invalid credentials');
-        }
+     const match = await bcrypt.compare(password, user.password);
+     
+    if (match) {
+        
+     // Återställ login-försök vid framgångsrik inloggning
+        user.loginAttempts = 0;
+        user.lockUntil = undefined; // Ta bort låsningen
+        await user.save();
+
+        const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+        return res.json({ token, role: user.role });
     } else {
-        res.status(400).send('Invalid credentials');
+        // Om lösenordet inte matchar, öka loginAttempts
+        user.loginAttempts += 1;
+
+    if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+    const lockTime = Date.now() + LOCK_TIME;
+    const swedishTime = new Date(lockTime + 2 * 60 * 60 * 1000); // Lägg till 2 timmar för CEST
+    user.lockUntil = swedishTime.toISOString().substring(0, 19); // Ta bort millisekunder och tidszon
+}
+
+
+        await user.save();
+
+        return res.status(400).send('Invalid credentials');
     }
 });
 
