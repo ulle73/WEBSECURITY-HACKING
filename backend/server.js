@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser()); // Aktivera cookie-parser
 
 
-mongoose.connect('mongodb://localhost:27017/Golfstore', {
+mongoose.connect(`mongodb://${process.env.MONGODB_URI}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("Connected to MongoDB"))
@@ -61,7 +61,7 @@ const loginLimiter = rateLimit({
     message: 'För många inloggningsförsök, vänligen försök igen senare.'
 });
 
-const SECRET_KEY = 'your-very-secure-secret-key';
+const SECRET_KEY = process.env.SECRET_KEY;
 
 function sanitizeInput(input) {
     input = input.replace(/<script.*?>.*?<\/script>/gi, '');

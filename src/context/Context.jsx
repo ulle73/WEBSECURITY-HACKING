@@ -2,11 +2,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
-// import dotenv from "dotenv"
 
 // Skapa kontext
 export const AuthContext = createContext();
-// dotenv.config();
 
 // AuthProvider-komponenten
 export function AuthProvider({ children }) {
@@ -19,7 +17,7 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/user-page', { withCredentials: true });
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-page`, { withCredentials: true });
                 const { user } = response.data; // Nu returneras användardata
                 if (user) {
                     setUser(user); // Sätt användarens data i state
@@ -37,7 +35,7 @@ export function AuthProvider({ children }) {
     // Logga in användare
     async function login(username, password) {
         try {
-            const response = await axios.post('http://localhost:5000/login', { username, password }, { withCredentials: true });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { username, password }, { withCredentials: true });
             const { role } = response.data;
 
             const userData = { username, role };
@@ -53,7 +51,7 @@ export function AuthProvider({ children }) {
     // Registrera ny användare
     async function register(username, password, role = 'user') {
         try {
-            await axios.post('http://localhost:5000/register', { username, password, role });
+            await axios.post(`${import.meta.env.VITE_API_URL}/register`, { username, password, role });
             await login(username, password); // Automatisk inloggning efter registrering
         } catch (error) {
             console.error("Registration failed", error);
@@ -65,7 +63,7 @@ export function AuthProvider({ children }) {
     // Logga ut användare
     async function logout() {
         try {
-            await axios.post('http://localhost:5000/logout', {}, { withCredentials: true });
+            await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, { withCredentials: true });
             setUser(null);
         } catch (error) {
             console.error("Logout failed", error);
@@ -76,7 +74,7 @@ export function AuthProvider({ children }) {
     // Hämta golfklubbor
     async function fetchGolfClubs() {
         try {
-            const response = await axios.get('http://localhost:5000/user-page', { withCredentials: true });
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-page`, { withCredentials: true });
             setGolfClubs(response.data.clubs);
             setError(null);
         } catch (err) {
@@ -88,7 +86,7 @@ export function AuthProvider({ children }) {
     // Ta bort golfklubb
     async function deleteGolfClub(id) {
         try {
-            await axios.delete(`http://localhost:5000/admin-page/delete/${id}`, { withCredentials: true });
+            await axios.delete(`${import.meta.env.VITE_API_URL}/admin-page/delete/${id}`, { withCredentials: true });
             setGolfClubs(golfClubs.filter(club => club._id !== id));  // Uppdatera state
         } catch (err) {
             console.error("Error deleting golf club", err);
@@ -99,7 +97,7 @@ export function AuthProvider({ children }) {
     // Skicka recension
     const handleReviewSubmit = async (clubId, { review, rating }) => {
         try {
-            await axios.post(`http://localhost:5000/clubs/${clubId}/review`, { review, rating }, { withCredentials: true });
+            await axios.post(`${import.meta.env.VITE_API_URL}/clubs/${clubId}/review`, { review, rating }, { withCredentials: true });
 
             // Hämta uppdaterade golfklubbar efter inskickning
             await fetchGolfClubs();  // Anropar funktionen för att hämta de senaste golfklubbarna
