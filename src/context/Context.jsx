@@ -19,9 +19,11 @@ export function AuthProvider({ children }) {
                 const { user } = response.data; // Nu returneras användardata
                 if (user) {
                     setUser(user); // Sätt användarens data i state
+                    setError(null);
                 }
             } catch (err) {
-                setError(err.response?.data || 'Misslyckades med att hämta användardata.'); // Använd felmeddelande från backend
+                //setError(err.response?.data || 'Misslyckades med att hämta användardata.'); // Använd felmeddelande från backend
+                setError(null);
             } finally {
                 setLoading(false);
             }
@@ -105,6 +107,7 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         async function checkUser() {
             setLoading(false);
+            setError(null);
         }
         checkUser();
     }, []);
@@ -112,13 +115,14 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         if (user) {
             fetchGolfClubs();
+            setError(null);
         }
     }, [user]);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
             {loading ? <div>Loading...</div> : children}
-            {error && <div className="error-message">{error}</div>} {/* Visa felmeddelande om det finns */}
+          
         </AuthContext.Provider>
     );
 }

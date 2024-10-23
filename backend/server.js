@@ -163,6 +163,10 @@ function verifyAdmin(req, res, next) {
     next();
 }
 
+app.get('/', async (req, res) => {
+   res.sendStatus(200);
+});
+
 // Skyddad route - endast för inloggade användare
 app.get('/user-page', authenticateToken, async (req, res) => {
     const clubs = await GolfClub.find();
