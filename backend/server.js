@@ -90,6 +90,10 @@ app.post('/register', async (req, res) => {
     if (passwordStrength.score < 3) {  // 0-4 där 3-4 är bra
         return res.status(400).send('Lösenordet är för svagt eller vanligt. Använd ett starkare lösenord.');
     }
+    
+    if(password === username){
+        return res.status(400).send('Lösenordet och användarnamn får inte vara lika.');
+    }
 
     // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
     const hashedPassword = await bcrypt.hash(password, 10);
