@@ -58,7 +58,9 @@ const LOCK_TIME = 15 * 60 * 1000; // 15 minuter
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
-    message: 'För många inloggningsförsök, vänligen försök igen senare.'
+    message: 'För många inloggningsförsök, vänligen försök igen senare.',
+     keyGenerator: (req) => req.body.username, // Begränsa baserat på användarnamn
+    skipFailedRequests: true, // Ignorera lyckade inloggningsförsök
 });
 
 const SECRET_KEY = process.env.SECRET_KEY;
