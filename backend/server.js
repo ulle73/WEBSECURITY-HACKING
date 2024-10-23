@@ -8,10 +8,10 @@ import cookieParser from 'cookie-parser'; // För att hantera cookies
 import validator from 'validator';
 import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv' 
 
 const app = express();
-dotenv.config();
+dotenv.config({ path: '.env.backend' });
 app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); // Tillåt CORS med credentials
 app.use(express.json());
 app.use(cookieParser()); // Aktivera cookie-parser
