@@ -45,6 +45,7 @@ function ReviewBox({ clubId }) {
           <StarRatings
             rating={rating}
             starRatedColor="#ffd700" // Färg på de valda stjärnorna
+            starHoverColor="#ffd700"
             changeRating={(newRating) => setRating(newRating)} // Hantera betygsändringar
             numberOfStars={5} // Antal stjärnor
             name='rating'

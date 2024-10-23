@@ -8,11 +8,14 @@ import cookieParser from 'cookie-parser'; // För att hantera cookies
 import validator from 'validator';
 import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
+import dotenv from 'dotenv'
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // Tillåt CORS med credentials
+dotenv.config();
+app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); // Tillåt CORS med credentials
 app.use(express.json());
 app.use(cookieParser()); // Aktivera cookie-parser
+
 
 mongoose.connect('mongodb://localhost:27017/Golfstore', {
     useNewUrlParser: true,

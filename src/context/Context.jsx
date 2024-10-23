@@ -2,9 +2,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
+// import dotenv from "dotenv"
 
 // Skapa kontext
 export const AuthContext = createContext();
+// dotenv.config();
 
 // AuthProvider-komponenten
 export function AuthProvider({ children }) {
