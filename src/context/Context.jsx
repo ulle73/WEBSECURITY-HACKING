@@ -1,7 +1,5 @@
-// Context.jsx
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from "jwt-decode";
 
 // Skapa kontext
 export const AuthContext = createContext();
@@ -23,7 +21,7 @@ export function AuthProvider({ children }) {
                     setUser(user); // Sätt användarens data i state
                 }
             } catch (err) {
-                console.error("Failed to retrieve user from cookies", err);
+                setError(err.response?.data || 'Misslyckades med att hämta användardata.'); // Använd felmeddelande från backend
             } finally {
                 setLoading(false);
             }
@@ -40,10 +38,10 @@ export function AuthProvider({ children }) {
 
             const userData = { username, role };
             setUser(userData);
+            setError(null);
 
         } catch (err) {
-            console.error("Login failed", err);
-            setError('Inloggning misslyckades. Kontrollera dina uppgifter.');
+            setError(err.response?.data || 'Inloggning misslyckades. Kontrollera dina uppgifter.'); // Använd felmeddelande från backend
             throw err;
         }
     }
@@ -53,9 +51,9 @@ export function AuthProvider({ children }) {
         try {
             await axios.post(`${import.meta.env.VITE_API_URL}/register`, { username, password, role });
             await login(username, password); // Automatisk inloggning efter registrering
+            setError(null);
         } catch (error) {
-            console.error("Registration failed", error);
-            setError('Registrering misslyckades. Försök igen.');
+            setError(error.response?.data || 'Registrering misslyckades. Försök igen.'); // Använd felmeddelande från backend
             throw error;
         }
     }
@@ -65,9 +63,10 @@ export function AuthProvider({ children }) {
         try {
             await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, { withCredentials: true });
             setUser(null);
+            setError(null);
+            
         } catch (error) {
-            console.error("Logout failed", error);
-            setError('Misslyckades med att logga ut.');
+            setError(error.response?.data || 'Misslyckades med att logga ut.'); // Använd felmeddelande från backend
         }
     }
 
@@ -78,8 +77,7 @@ export function AuthProvider({ children }) {
             setGolfClubs(response.data.clubs);
             setError(null);
         } catch (err) {
-            console.error("Error fetching golf clubs", err);
-            setError('Misslyckades med att hämta golfklubbor. Försök igen.');
+            setError(err.response?.data || 'Misslyckades med att hämta golfklubbor. Försök igen.'); // Använd felmeddelande från backend
         }
     }
 
@@ -89,8 +87,7 @@ export function AuthProvider({ children }) {
             await axios.delete(`${import.meta.env.VITE_API_URL}/admin-page/delete/${id}`, { withCredentials: true });
             setGolfClubs(golfClubs.filter(club => club._id !== id));  // Uppdatera state
         } catch (err) {
-            console.error("Error deleting golf club", err);
-            setError('Misslyckades med att radera golfklubben. Försök igen.');
+            setError(err.response?.data || 'Misslyckades med att radera golfklubben. Försök igen.'); // Använd felmeddelande från backend
         }
     }
 
@@ -98,11 +95,9 @@ export function AuthProvider({ children }) {
     const handleReviewSubmit = async (clubId, { review, rating }) => {
         try {
             await axios.post(`${import.meta.env.VITE_API_URL}/clubs/${clubId}/review`, { review, rating }, { withCredentials: true });
-
-            // Hämta uppdaterade golfklubbar efter inskickning
-            await fetchGolfClubs();  // Anropar funktionen för att hämta de senaste golfklubbarna
+            await fetchGolfClubs();  // Hämta uppdaterade golfklubbar efter inskickning
         } catch (error) {
-            console.error('Failed to submit review:', error);
+            setError(error.response?.data || 'Misslyckades med att skicka recensionen.'); // Använd felmeddelande från backend
         }
     };
 
@@ -123,6 +118,7 @@ export function AuthProvider({ children }) {
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading, error, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
             {loading ? <div>Loading...</div> : children}
+            {error && <div className="error-message">{error}</div>} {/* Visa felmeddelande om det finns */}
         </AuthContext.Provider>
     );
 }
