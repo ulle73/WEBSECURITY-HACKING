@@ -128,7 +128,7 @@ app.post('/login', loginLimiter, async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             
-            maxAge: 1 * 60 * 1000 // 1 timme
+            maxAge: 5 * 60 * 1000 // 1 timme
         });
         return res.json({ role: user.role });
     } else {

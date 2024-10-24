@@ -2,112 +2,98 @@
     {
         "brand": "Titleist",
         "model": "GT2",
-        "price": 49.99,
+        "price": 7999,
         "quantity": 15,
         "imgUrl": "https://www.dormy.com/assets/blobs/02003A0K1_A-31a905449f.jpeg"
     },
     {
         "brand": "Callaway",
         "model": "Rogue ST LS",
-        "price": 59.99,
+        "price": 5999,
         "quantity": 10,
         "imgUrl": "https://www.dormy.com/assets/blobs/02005A0A9_A-7f8d547279.jpeg"
     },
     {
         "brand": "TaylorMade",
         "model": "Qi10 LS",
-        "price": 69.99,
+        "price": 7999,
         "quantity": 8,
         "imgUrl": "https://www.dormy.com/assets/blobs/02007A0E5_A-01d77f50fe.jpeg"
     },
     {
         "brand": "Ping",
         "model": "G430 10K",
-        "price": 79.99,
+        "price": 7999,
         "quantity": 12,
         "imgUrl": "https://www.dormy.com/assets/blobs/02011321_A-f4b6d7c124.jpeg"
     },
     {
-        "brand": "Cobra",
-        "model": "F9",
-        "price": 89.99,
-        "quantity": 5,
-        "imgUrl": "https://www.dormy.com/assets/blobs/01002A0J6_A-6cf080480f.jpeg"
-    },
-    {
         "brand": "Mizuno",
         "model": "JPX 921",
-        "price": 79.99,
+        "price": 9999,
         "quantity": 20,
         "imgUrl": "https://www.dormy.com/assets/blobs/01001489_A-bab4bedff5.jpeg"
     },
     {
         "brand": "Wilson",
-        "model": "D9",
-        "price": 49.99,
+        "model": "Froged CB",
+        "price": 9999,
         "quantity": 15,
         "imgUrl": "https://www.dormy.com/assets/blobs/01006639_A-33a9f802cc.jpeg"
     },
     {
         "brand": "Srixon",
         "model": "ZX5",
-        "price": 39.99,
+        "price": 4999,
         "quantity": 25,
         "imgUrl": "https://www.dormy.com/assets/blobs/02026655_A-de6fd71f7d.jpeg"
     },
     {
         "brand": "PXG",
         "model": "0311",
-        "price": 199.99,
+        "price": 6999,
         "quantity": 3,
         "imgUrl": "https://www.dormy.com/assets/blobs/02008008_A-65aec47bc5.jpeg"
     },
     {
         "brand": "Callaway",
         "model": "Apex TI Fusion",
-        "price": 59.99,
+        "price": 24999,
         "quantity": 10,
         "imgUrl": "https://www.dormy.com/assets/blobs/01005A0B6_A-df46e45082.jpeg"
     },
     {
         "brand": "Callaway",
         "model": "Paradym AI Smoke",
-        "price": 49.99,
+        "price": 11999,
         "quantity": 10,
         "imgUrl": "https://www.dormy.com/assets/blobs/01005A0B1_A-cfbe16dbed.jpeg"
     },
     {
         "brand": "TaylorMade",
         "model": "P790",
-        "price": 69.99,
+        "price": 14999,
         "quantity": 8,
         "imgUrl": "https://www.dormy.com/assets/blobs/01007A0B0_A-48a218ba64.jpeg"
     },
     {
         "brand": "Cobra",
         "model": "Forged Tec",
-        "price": 89.99,
+        "price": 10999,
         "quantity": 5,
         "imgUrl": "https://www.dormy.com/assets/blobs/01002A0J6_A-6cf080480f.jpeg"
     },
     {
         "brand": "Mizuno",
         "model": "JPX 923 HM Pro",
-        "price": 79.99,
+        "price": 7999,
         "quantity": 20,
         "imgUrl": "https://www.dormy.com/assets/blobs/01001489_A-bab4bedff5.jpeg"
     },
     {
-        "brand": "Wilson",
-        "model": "Staff Model CB",
-        "price": 49.99,
-        "quantity": 15,
-        "imgUrl": "https://www.dormy.com/assets/blobs/01006639_A-33a9f802cc.jpeg"
-    },
-    {
         "brand": "Titleist",
         "model": "T200",
-        "price": 49.99,
+        "price": 14999,
         "quantity": 15,
         "imgUrl": "https://www.dormy.com/assets/blobs/01003A0A2_A-5cab551681.jpeg"
     }
