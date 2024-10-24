@@ -50,6 +50,8 @@ function AdminPage() {
     return (
         <div className="container text-center">
             <h1 className="mb-4">Admin-sidan</h1>
+            <Link to="/admin-logs">Logs</Link>
+          
             <Row className="justify-content-center">
                 {golfClubs.map(club => (
                     <Col key={club._id} xs={12} sm={6} md={4} lg={3} className="mb-4 d-flex justify-content-center">

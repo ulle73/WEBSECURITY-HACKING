@@ -44,6 +44,15 @@ const GolfClubSchema = new mongoose.Schema({
     }]
 });
 
+const LoginLogSchema = new mongoose.Schema({
+  username: String,
+  time: { type: String, default: Date.now },
+  success: Boolean,
+  message: String,
+});
+
+
+
 UserSchema.methods.isLocked = function () {
     const lockUntilDate = new Date(this.lockUntil).getTime();
     return this.lockUntil && lockUntilDate > Date.now();
@@ -51,13 +60,14 @@ UserSchema.methods.isLocked = function () {
 
 const User = mongoose.model('User', UserSchema);
 const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
+const LoginLog = mongoose.model("LoginLog", LoginLogSchema);
 
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCK_TIME = 15 * 60 * 1000; // 15 minuter
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 5,
+    max: 20,
     message: 'För många inloggningsförsök, vänligen försök igen senare.',
      keyGenerator: (req) => req.body.username, // Begränsa baserat på användarnamn
     skipFailedRequests: true, // Ignorera lyckade inloggningsförsök
@@ -108,14 +118,28 @@ app.post('/register', async (req, res) => {
 app.post('/login', loginLimiter, async (req, res) => {
     let { username, password } = req.body;
     username = sanitizeInput(username);
+    console.log("LOGIN TRY")
+        const time = new Date()
+          .toLocaleString("sv-SE", {
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+          .replace(" ", "-");
 
     const user = await User.findOne({ username });
     if (!user) {
-        return res.status(400).send('Invalid credentials');
+         await LoginLog.create({ username, time, success: false });
+        return res
+          .status(400)
+          .json({ message: "Invalid credentials", username, time });
     }
 
     if (user.isLocked()) {
-        return res.status(403).send('Account locked. Please try again later.');
+        await LoginLog.create({ username, time, success: false, message: 'Account locked.' });
+        return res.status(403).json({message: 'Account locked. Please try again later.', username, time});
     }
 
     const match = await bcrypt.compare(password, user.password);
@@ -130,7 +154,8 @@ app.post('/login', loginLimiter, async (req, res) => {
             
             maxAge: 5 * 60 * 1000 // 1 timme
         });
-        return res.json({ role: user.role });
+        await LoginLog.create({ username, time, success: true });
+        return res.status(200).json({message: 'Sucessful login', role: user.role, username, time });
     } else {
         user.loginAttempts += 1;
         if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
@@ -139,7 +164,8 @@ app.post('/login', loginLimiter, async (req, res) => {
             user.lockUntil = swedishTime.toISOString().substring(0, 19);
         }
         await user.save();
-        return res.status(400).send('Invalid credentials');
+        await LoginLog.create({ username, time, success: false });
+        return res.status(400).json({message: 'Invalid credentials', username, time});
     }
 });
 
@@ -242,5 +268,21 @@ app.post('/logout', (req, res) => {
     res.clearCookie('token');
     res.send('Logged out');
 });
+
+
+app.get("/admin-logs", authenticateToken, verifyAdmin, async (req, res) => {
+  try {
+    const logs = await LoginLog.find().sort({ time: -1 }); // Hämta alla loggar, sorterade efter tid (nyaste först)
+    res.json({
+      message: "Inloggningsloggar",
+      logs,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Ett fel inträffade vid hämtning av loggarna" });
+  }
+});
+
 
 app.listen(5000, () => console.log('Server running on port 5000'));
