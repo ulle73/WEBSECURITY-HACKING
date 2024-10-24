@@ -66,11 +66,13 @@ function AdminPage() {
                                     <Card.Text>
                                         Pris: {club.price} kr
                                     </Card.Text>
-                                    <Button variant="danger" onClick={() => deleteGolfClub(club._id)}>
-                                        Ta bort
-                                    </Button>
                                 </Card.Body>
                             </Link>
+                                    <Button style={{width: '30%', alignSelf: 'center', marginBottom: '5px'}} variant="danger" onClick={() => deleteGolfClub(club._id)}>
+                                        Ta bort
+                                    </Button>
+                                
+                           
                         </Card>
                     </Col>
                 ))}
