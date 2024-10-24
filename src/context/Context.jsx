@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
             await login(username, password); // Automatisk inloggning efter registrering
             setError(null);
         } catch (error) {
-            setError(error.response?.data.message || 'Registrering misslyckades. Försök igen.'); // Använd felmeddelande från backend
+            setError(error.response?.data || 'Registrering misslyckades. Försök igen.'); // Använd felmeddelande från backend
             throw error;
         }
     }
