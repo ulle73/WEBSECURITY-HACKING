@@ -96,5 +96,19 @@
         "price": 14999,
         "quantity": 15,
         "imgUrl": "https://www.dormy.com/assets/blobs/01003A0A2_A-5cab551681.jpeg"
+    },
+     {
+        "brand": "Callaway",
+        "model": "Apex UW",
+        "price": 4099,
+        "quantity": 20,
+        "imgUrl": "https://www.dormy.com/assets/blobs/02005A0C9_A-f85bcd6a98.jpeg"
+    },
+    {
+        "brand": "Mizuno",
+        "model": "ST-G 24",
+        "price": 14999,
+        "quantity": 15,
+        "imgUrl": "https://www.dormy.com/assets/blobs/02001202_A-ec820efc4f.jpeg"
     }
 ]
