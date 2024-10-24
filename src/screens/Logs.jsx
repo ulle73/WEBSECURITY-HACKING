@@ -2,7 +2,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/Context';
 import { Navigate, Link } from 'react-router-dom';
-import { Card, Button, Row, Col } from 'react-bootstrap';
+import { ListGroup, Row, Col } from 'react-bootstrap';
+
 import axios from 'axios';
 
 function Logs() {
@@ -77,15 +78,32 @@ function Logs() {
   }
 
   return (
-    <div className="container text-center">
+    <div className="container text-center ">
       <h1 className="mb-4">Admin-Logs</h1>
-      {logs.map((log, index)=>{
-        return (<li key={index}>
-          <strong>{log.username}</strong> - {log.time} - {log.success ? 'Lyckad' : 'Misslyckad'} - {log.message}
-          
-        </li>)
-      })}
-    
+      <ListGroup style={{ width: '50%' }} className="mx-auto" variant="flush">
+        {logs.slice(0, 100).map((log, index) => (
+          <ListGroup.Item key={index} className="m-0">
+            <Row >
+              <Col xs={3} style={{overflow: 'hidden'}} className="text-start">
+                <strong>{log.username}</strong>
+              </Col>
+              <Col xs={4} className="text-center">
+                {log.time}
+              </Col>
+              <Col xs={2} className="text-center">
+                {log.success ? (
+                  <span className="text-success">Lyckad</span>
+                ) : (
+                  <span className="text-danger">Misslyckad</span>
+                )}
+              </Col>
+              <Col xs={3} className="text-end">
+                {log.message}
+              </Col>
+            </Row>
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
     </div>
   );
 }
