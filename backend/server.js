@@ -1,6 +1,4 @@
-// server.js
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -10,6 +8,10 @@ import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
 import dotenv from 'dotenv' 
 import { User, GolfClub, LoginLog } from './scheman.js'
+import './DBconfig.js'
+import { authenticateToken, verifyAdmin } from "./authMiddleware.js";
+
+
 
 const app = express();
 dotenv.config({ path: '.env.backend' });
@@ -17,18 +19,9 @@ app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); // Till�
 app.use(express.json());
 app.use(cookieParser()); // Aktivera cookie-parser
 
-
-mongoose.connect(`mongodb://${process.env.MONGODB_URI}`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("Connected to MongoDB"))
-  .catch(err => console.error("Connection failed", err));
-
-
-
-  
+const SECRET_KEY = process.env.SECRET_KEY;
 const MAX_LOGIN_ATTEMPTS = 3;
-const LOCK_TIME = 15 * 60 * 1000; // 15 minuter
+const LOCK_TIME = 15 * 60 * 1000;
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -38,12 +31,16 @@ const loginLimiter = rateLimit({
     skipFailedRequests: true, // Ignorera lyckade inloggningsförsök
 });
 
-const SECRET_KEY = process.env.SECRET_KEY;
 
 function sanitizeInput(input) {
     input = input.replace(/<script.*?>.*?<\/script>/gi, '');
     return validator.whitelist(input, ' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
 }
+
+
+
+
+// ROUTES //
 
 // Registrera ny användare
 app.post('/register', async (req, res) => {
@@ -134,25 +131,7 @@ app.post('/login', loginLimiter, async (req, res) => {
     }
 });
 
-// Middleware för att verifiera JWT-token från cookies
-function authenticateToken(req, res, next) {
-    const token = req.cookies.token;
-    if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-}
-
-// Middleware för att verifiera admin-roll
-function verifyAdmin(req, res, next) {
-    if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Access denied. Admins only.' });
-    }
-    next();
-}
 
 app.get('/', async (req, res) => {
    res.sendStatus(200);
