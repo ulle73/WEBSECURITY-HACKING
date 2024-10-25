@@ -33,6 +33,8 @@ const LoginLogSchema = new mongoose.Schema({
   time: { type: String, default: Date.now },
   success: Boolean,
   message: String,
+  ipAddress: { type: String }, 
+  userAgent: { type: String },
 });
 
 

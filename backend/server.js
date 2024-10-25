@@ -81,6 +81,14 @@ app.post('/login', loginLimiter, async (req, res) => {
     let { username, password } = req.body;
     username = sanitizeInput(username);
     console.log("LOGIN TRY")
+    
+    
+     const ipAddress = req.ip;
+     const userAgent = req.headers["user-agent"];
+     console.log(req)
+     console.log(ipAddress)
+     console.log(userAgent)
+     
         const time = new Date()
           .toLocaleString("sv-SE", {
             year: "2-digit",
@@ -93,15 +101,36 @@ app.post('/login', loginLimiter, async (req, res) => {
 
     const user = await User.findOne({ username });
     if (!user) {
-         await LoginLog.create({ username, time, success: false });
+         await LoginLog.create({ username, time, success: false, ipAddress, userAgent });
         return res
           .status(400)
-          .json({ message: "Invalid credentials", username, time });
+          .json({
+            message: "Invalid credentials",
+            username,
+            time,
+            ipAddress,
+            userAgent,
+          });
     }
 
     if (user.isLocked()) {
-        await LoginLog.create({ username, time, success: false, message: 'Account locked.' });
-        return res.status(403).json({message: 'Account locked. Please try again later.', username, time});
+        await LoginLog.create({
+          username,
+          time,
+          success: false,
+          message: "Account locked.",
+          ipAddress,
+          userAgent,
+        });
+        return res
+          .status(403)
+          .json({
+            message: "Account locked. Please try again later.",
+            username,
+            time,
+            ipAddress,
+            userAgent,
+          });
     }
 
     const match = await bcrypt.compare(password, user.password);
@@ -116,8 +145,23 @@ app.post('/login', loginLimiter, async (req, res) => {
             
             maxAge: 5 * 60 * 1000 // 1 timme
         });
-        await LoginLog.create({ username, time, success: true });
-        return res.status(200).json({message: 'Sucessful login', role: user.role, username, time });
+        await LoginLog.create({
+          username,
+          time,
+          success: true,
+          ipAddress,
+          userAgent,
+        });
+        return res
+          .status(200)
+          .json({
+            message: "Sucessful login",
+            role: user.role,
+            username,
+            time,
+            ipAddress,
+            userAgent,
+          });
     } else {
         user.loginAttempts += 1;
         if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
@@ -126,8 +170,22 @@ app.post('/login', loginLimiter, async (req, res) => {
             user.lockUntil = swedishTime.toISOString().substring(0, 19);
         }
         await user.save();
-        await LoginLog.create({ username, time, success: false });
-        return res.status(400).json({message: 'Invalid credentials', username, time});
+        await LoginLog.create({
+          username,
+          time,
+          success: false,
+          ipAddress,
+          userAgent,
+        });
+        return res
+          .status(400)
+          .json({
+            message: "Invalid credentials",
+            username,
+            time,
+            ipAddress,
+            userAgent,
+          });
     }
 });
 

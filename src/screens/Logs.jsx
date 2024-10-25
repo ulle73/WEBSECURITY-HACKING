@@ -12,15 +12,39 @@ function Logs() {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState([]);
   
+  
+  const simplifyUserAgent = (userAgent) => {
+    // Kontrollera om userAgent är definierad, annars returnera standardvärde
+    if (!userAgent) return "Unknown Browser - Unknown OS";
+
+    const browserMatch = userAgent.match(/(Chrome|Firefox|Safari|Opera|Edge|MSIE|Trident)\/[^\s]+/);
+    const osMatch = userAgent.match(/\(([^)]+)\)/);
+
+    const browser = browserMatch ? browserMatch[0] : "Unknown Browser";
+    const os = osMatch ? osMatch[1] : "Unknown OS";
+
+    return `${browser} - ${os}`;
+  };
+
+
  
   
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin-logs`, { withCredentials: true });
-        setLogs(response.data.logs);
+
+        // Förenkla varje loggpost
+        const simplifiedLogs = response.data.logs.map((log) => ({
+          ...log,
+          userAgent: simplifyUserAgent(log.userAgent),
+        }));
+
+        console.log("Fetched logs:", simplifiedLogs); // Felsökningslogg för att se innehållet
+        setLogs(simplifiedLogs);
         setError(null);
       } catch (err) {
+        console.error("Error fetching logs:", err); // Logga eventuella fel
         setError(err.response?.data.message);
       }
     };
@@ -36,7 +60,6 @@ function Logs() {
     // Städa upp intervallet när komponenten unmountas
     return () => clearInterval(interval);
   }, []);
- 
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -80,24 +103,30 @@ function Logs() {
   return (
     <div className="container text-center ">
       <h1 className="mb-4">Admin-Logs</h1>
-      <ListGroup style={{ width: '50%' }} className="mx-auto" variant="flush">
+      <ListGroup style={{ width: '100%' }} className="mx-auto" variant="flush">
         {logs.slice(0, 100).map((log, index) => (
           <ListGroup.Item key={index} className="m-0">
             <Row >
-              <Col xs={3} style={{overflow: 'hidden'}} className="text-start">
+              <Col xs={2} style={{overflow: 'hidden'}} className="text-start">
                 <strong>{log.username}</strong>
               </Col>
-              <Col xs={4} className="text-center">
+              <Col xs={2} className="text-center">
                 {log.time}
               </Col>
-              <Col xs={2} className="text-center">
+              <Col xs={1} className="text-center">
+                {log.ipAddress}
+              </Col>
+              <Col xs={4} className="text-center">
+                {log.userAgent}
+              </Col>
+              <Col xs={1} className="text-center">
                 {log.success ? (
                   <span className="text-success">Lyckad</span>
                 ) : (
                   <span className="text-danger">Misslyckad</span>
                 )}
               </Col>
-              <Col xs={3} className="text-end">
+              <Col xs={2} className="text-end">
                 {log.message}
               </Col>
             </Row>
