@@ -9,6 +9,7 @@ import validator from 'validator';
 import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
 import dotenv from 'dotenv' 
+import { User, GolfClub, LoginLog } from './scheman.js'
 
 const app = express();
 dotenv.config({ path: '.env.backend' });
@@ -23,45 +24,9 @@ mongoose.connect(`mongodb://${process.env.MONGODB_URI}`, {
 }).then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("Connection failed", err));
 
-const UserSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    role: { type: String, enum: ['user', 'superuser', 'admin'], default: 'user' },
-    loginAttempts: { type: Number, default: 0 },
-    lockUntil: { type: String }
-});
-
-const GolfClubSchema = new mongoose.Schema({
-    brand: String,
-    model: String,
-    price: Number,
-    quantity: Number,
-    reviews: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        review: String,
-        rating: { type: Number, required: true },
-        date: { type: Date, default: Date.now }
-    }]
-});
-
-const LoginLogSchema = new mongoose.Schema({
-  username: String,
-  time: { type: String, default: Date.now },
-  success: Boolean,
-  message: String,
-});
 
 
-
-UserSchema.methods.isLocked = function () {
-    const lockUntilDate = new Date(this.lockUntil).getTime();
-    return this.lockUntil && lockUntilDate > Date.now();
-};
-
-const User = mongoose.model('User', UserSchema);
-const GolfClub = mongoose.model('GolfClub', GolfClubSchema);
-const LoginLog = mongoose.model("LoginLog", LoginLogSchema);
-
+  
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCK_TIME = 15 * 60 * 1000; // 15 minuter
 
