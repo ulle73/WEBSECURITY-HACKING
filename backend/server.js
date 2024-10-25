@@ -37,7 +37,13 @@ function sanitizeInput(input) {
     return validator.whitelist(input, ' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
 }
 
-
+function sanitizeUserAgent(userAgent) {
+ userAgent = userAgent.replace(/<script.*?>.*?<\/script>/gi, "");
+ return validator.whitelist(
+   userAgent,
+   " <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ"
+ ); 
+}
 
 
 // ROUTES //
@@ -84,10 +90,8 @@ app.post('/login', loginLimiter, async (req, res) => {
     
     
      const ipAddress = req.ip;
-     const userAgent = req.headers["user-agent"];
-     console.log(req)
-     console.log(ipAddress)
-     console.log(userAgent)
+     const userAgent = sanitizeUserAgent(req.headers["user-agent"])
+  
      
         const time = new Date()
           .toLocaleString("sv-SE", {

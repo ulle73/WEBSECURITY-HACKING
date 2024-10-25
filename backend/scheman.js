@@ -34,7 +34,10 @@ const LoginLogSchema = new mongoose.Schema({
   success: Boolean,
   message: String,
   ipAddress: { type: String }, 
-  userAgent: { type: String },
+ userAgent: {
+    type: String,
+    maxlength: 300
+  }
 });
 
 

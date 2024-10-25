@@ -17,14 +17,22 @@ function Logs() {
     // Kontrollera om userAgent är definierad, annars returnera standardvärde
     if (!userAgent) return "Unknown Browser - Unknown OS";
 
-    const browserMatch = userAgent.match(/(Chrome|Firefox|Safari|Opera|Edge|MSIE|Trident)\/[^\s]+/);
+    // Hitta webbläsare
+    const browserMatch = userAgent.match(/(Chrome|Firefox|Safari|Opera|Edge|MSIE|Trident|Edg|OPR)\/?(\d+)?/i);
+
+    // Hitta operativsystem
     const osMatch = userAgent.match(/\(([^)]+)\)/);
 
-    const browser = browserMatch ? browserMatch[0] : "Unknown Browser";
-    const os = osMatch ? osMatch[1] : "Unknown OS";
+    // Använd första matchningen eller sätt "Unknown" som standardvärde
+    const browser = browserMatch ? browserMatch[1] : "Unknown Browser";
+    const os = osMatch ? osMatch[1].split(";")[0] : "Unknown OS";
 
-    return `${browser} - ${os}`;
+    // Formatera webbläsarens namn för Microsoft Edge och Opera
+    const formattedBrowser = browser === "Edg" ? "Edge" : browser === "OPR" ? "Opera" : browser;
+
+    return `${formattedBrowser} - ${os}`;
   };
+
 
 
  
