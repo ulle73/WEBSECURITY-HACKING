@@ -34,7 +34,7 @@ const loginLimiter = rateLimit({
 
 function sanitizeInput(input) {
     input = input.replace(/<script.*?>.*?<\/script>/gi, '');
-    return validator.whitelist(input, ' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
+    return validator.whitelist(input,' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
 }
 
 function sanitizeUserAgent(userAgent) {
