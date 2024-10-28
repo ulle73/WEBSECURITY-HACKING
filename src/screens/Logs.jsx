@@ -78,7 +78,7 @@ function Logs() {
       }
 
       try {
-        const response = await axios.get('http://localhost:5000/admin-page', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin-page`, {
           withCredentials: true,  // Skicka cookies automatiskt
         });
 
