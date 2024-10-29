@@ -4,6 +4,7 @@ import { useParams, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/Context';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import ReviewBox from '../components/ReviewBox';
+import axios from 'axios'
 
 function ClubDetails() {
   const { user, golfClubs } = useContext(AuthContext);
@@ -18,6 +19,22 @@ function ClubDetails() {
 
   if (!club) {
     return <div>Golfklubba hittades inte</div>;
+  }
+  
+  async function handleReservation () {
+    console.log('Produkt reserverad')
+    
+    try{
+      console.log(user)
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/reservations/${clubId}`, {
+        clubId: club._id,
+        userId: user.id,
+      });
+      
+    } catch(err){
+      
+    }
+    
   }
 
   return (
@@ -40,8 +57,8 @@ function ClubDetails() {
               <p><strong>Pris:</strong> {club.price} kr</p>
               <p><strong>Beskrivning:</strong> {club.description}</p>
               <div>
-                <button variant="primary" style={{ transform: 'scale(0.75)' }} className="mt-3 button-71">
-                  Lägg till i varukorgen
+                <button onClick={handleReservation} variant="primary" style={{ transform: 'scale(0.75)' }} className="mt-3 button-71">
+                  Reservera produkt
                 </button>
               </div>
             </div>

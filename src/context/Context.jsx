@@ -34,12 +34,15 @@ export function AuthProvider({ children }) {
     }, []);
 
     // Logga in användare
-    async function login(username, password) {
+    async function login(username, password, id) {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { username, password }, { withCredentials: true });
             const { role } = response.data;
+            const { id } = response.data
+            
+            console.log(response.data);
 
-            const userData = { username, role };
+            const userData = { username, role, id };
             setUser(userData);
             setError(null);
 

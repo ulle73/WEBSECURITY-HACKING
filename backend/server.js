@@ -45,7 +45,7 @@ function sanitizeUserAgent(userAgent) {
  userAgent = userAgent.replace(/<script.*?>.*?<\/script>/gi, "");
  return validator.whitelist(
    userAgent,
-   " <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ"
+   " &()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ"
  ); 
 }
 
@@ -169,6 +169,7 @@ app.post('/login', loginLimiter, async (req, res) => {
             time,
             ipAddress,
             userAgent,
+            id: user.id
           });
     } else {
         user.loginAttempts += 1;
@@ -293,6 +294,35 @@ app.get("/admin-logs", authenticateToken, verifyAdmin, async (req, res) => {
       .json({ message: "Ett fel inträffade vid hämtning av loggarna" });
   }
 });
+
+
+app.post("/reservations/:clubId", async (req, res) => {
+  const { clubId, userId,  date, time } = req.body;
+  console.log("userId", userId, "ClubID", clubId)
+  
+  
+   try {
+        const club = await GolfClub.findById(clubId);
+        if (!club) {
+            return res.status(404).send('Golfklubba hittades inte');
+        }
+
+        club.reviews.push({
+            user: req.user._id,
+            review: review,
+            rating: rating
+        });
+
+        await club.save();
+        res.status(201).send('Recension tillagd');
+    } catch (err) {
+        res.status(500).send('Ett fel inträffade när recensionen lades till');
+    }
+  
+  
+  res.json({ message: "club reserved" , userId, date, time})
+  
+})
 
 
 app.listen(5000, () => console.log('Server running on port 5000'));
