@@ -41,7 +41,25 @@ const LoginLogSchema = new mongoose.Schema({
 });
 
 
+const reservedProductSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  clubId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "GolfClub",
+    required: true,
+  },
+  reservedAt: { type: Date, default: Date.now },
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 2 * 60 * 1000), // 15 minuter framåt
+  },
+});
+
 
 export const User = mongoose.model("User", UserSchema);
 export const GolfClub = mongoose.model("GolfClub", GolfClubSchema);
 export const LoginLog = mongoose.model("LoginLog", LoginLogSchema);
+export const ReservedProduct = mongoose.model(
+  "ReservedProduct",
+  reservedProductSchema
+);

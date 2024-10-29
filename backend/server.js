@@ -7,9 +7,10 @@ import validator from 'validator';
 import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
 import dotenv from 'dotenv' 
-import { User, GolfClub, LoginLog } from './scheman.js'
+import { User, GolfClub, LoginLog, ReservedProduct } from "./scheman.js";
 import './DBconfig.js'
 import { authenticateToken, verifyAdmin } from "./authMiddleware.js";
+import { handleExpiredReservations } from './reservationCleanup.js';
 
 
 
@@ -18,6 +19,8 @@ dotenv.config({ path: '.env.backend' });
 app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); // Tillåt CORS med credentials
 app.use(express.json());
 app.use(cookieParser()); // Aktivera cookie-parser
+
+handleExpiredReservations();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const MAX_LOGIN_ATTEMPTS = 3;
@@ -296,33 +299,62 @@ app.get("/admin-logs", authenticateToken, verifyAdmin, async (req, res) => {
 });
 
 
-app.post("/reservations/:clubId", async (req, res) => {
-  const { clubId, userId,  date, time } = req.body;
-  console.log("userId", userId, "ClubID", clubId)
-  
-  
-   try {
-        const club = await GolfClub.findById(clubId);
-        if (!club) {
-            return res.status(404).send('Golfklubba hittades inte');
-        }
 
-        club.reviews.push({
-            user: req.user._id,
-            review: review,
-            rating: rating
-        });
 
-        await club.save();
-        res.status(201).send('Recension tillagd');
-    } catch (err) {
-        res.status(500).send('Ett fel inträffade när recensionen lades till');
+app.post("/reservations/:clubId", authenticateToken, async (req, res) => {
+  const { clubId } = req.params;
+  const { date, time, id } = req.body; 
+
+  
+  const userId = req.body.id; 
+console.log("HÄR", req.user)
+console.log("HÄR2", id)
+  
+  try {
+    const club = await GolfClub.findById(clubId);
+    if (!club) {
+      return res.status(404).send("Golfklubba hittades inte");
     }
-  
-  
-  res.json({ message: "club reserved" , userId, date, time})
-  
-})
+
+   
+    if (club.quantity <= 0) {
+      return res
+        .status(400)
+        .send("Ingen tillgänglig kvantitet för golfklubban.");
+    }
+    
+      const activeReservations = await ReservedProduct.countDocuments({
+        userId,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (activeReservations >= 5) {
+        return res
+          .status(400)
+          .send("Du kan endast reservera upp till 5 klubbor samtidigt.");
+      }
+
+    // Skapa en ny reservation
+  const reservation = new ReservedProduct({
+    userId, 
+    clubId, 
+    reservedAt: new Date(),
+    expiresAt: new Date(Date.now() + 2 * 60 * 1000), 
+  });
+
+    await reservation.save();
+
+    
+    club.quantity -= 1;
+    await club.save(); 
+
+    res.status(201).json({ message: "Klubba reserverad", reservation });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Ett fel inträffade när klubban reserverades");
+  }
+});
+
 
 
 app.listen(5000, () => console.log('Server running on port 5000'));

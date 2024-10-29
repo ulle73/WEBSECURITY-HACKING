@@ -7,7 +7,7 @@ import ReviewBox from '../components/ReviewBox';
 import axios from 'axios'
 
 function ClubDetails() {
-  const { user, golfClubs } = useContext(AuthContext);
+  const { user, golfClubs, error, setError } = useContext(AuthContext);
   const { clubId } = useParams();
 
   if (!user) {
@@ -21,20 +21,24 @@ function ClubDetails() {
     return <div>Golfklubba hittades inte</div>;
   }
   
-  async function handleReservation () {
-    console.log('Produkt reserverad')
-    
-    try{
-      console.log(user)
+  async function handleReservation() {
+    console.log('Produkt reserverad');
+    console.log(user)
+
+   
+
+    try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/reservations/${clubId}`, {
-        clubId: club._id,
-        userId: user.id,
-      });
       
-    } catch(err){
+       id: user.id,
       
+      }, { withCredentials: true });
+      console.log(response.data.message); 
+      setError(null)
+    } catch (err) {
+      setError(err.response.data)
+      console.error("Reservation failed:", err.response.data);
     }
-    
   }
 
   return (
@@ -60,6 +64,7 @@ function ClubDetails() {
                 <button onClick={handleReservation} variant="primary" style={{ transform: 'scale(0.75)' }} className="mt-3 button-71">
                   Reservera produkt
                 </button>
+                {error && <p className="text-danger mt-2">{error}</p>}
               </div>
             </div>
           </Col>
