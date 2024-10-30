@@ -48,6 +48,8 @@ app.post('/register', async (req, res) => {
     // Sanera användarnamn och roll
     username = sanitizeInput(username);
     role = validator.escape(role);
+    
+  
 
     // Kontrollera om lösenordet är minst 8 tecken
     if (!validator.isLength(password, { min: 8 })) {
@@ -65,6 +67,11 @@ app.post('/register', async (req, res) => {
     if(password === username){
         return res.status(400).send('Lösenordet och användarnamn får inte vara lika.');
     }
+    
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        return res.status(400).send("Användarnamnet är redan upptaget.");
+      }
 
     // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
     const hashedPassword = await bcrypt.hash(password, 10);
