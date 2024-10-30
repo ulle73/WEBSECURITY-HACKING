@@ -140,7 +140,7 @@ app.post('/login', loginLimiter, async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             
-            maxAge: 5 * 60 * 1000 // 1 timme
+            maxAge: 5 * 60 * 1000 
         });
         await LoginLog.create({
           username,
@@ -342,5 +342,9 @@ console.log("HÄR2", id)
 });
 
 
+app.get("/check-auth", authenticateToken, (req, res) => {
+  console.log("session active")
+  res.status(200).json({ message: "Session active" });
+});
 
 app.listen(5000, () => console.log('Server running on port 5000'));

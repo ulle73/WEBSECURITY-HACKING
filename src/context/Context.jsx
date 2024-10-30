@@ -33,6 +33,26 @@ export function AuthProvider({ children }) {
         fetchUser();
     }, []);
 
+    
+    useEffect(() => {
+        const checkAuthStatus = async () => {
+            try {
+                await axios.get(`${import.meta.env.VITE_API_URL}/check-auth`, { withCredentials: true });
+                
+            } catch (error) {
+                if (error.response?.status === 401) {
+                    logout();  // Automatisk utloggning om session har löpt ut
+                }
+            }
+        };
+
+        // Kör checkAuthStatus varje 5 minuter (300000 ms)
+        const intervalId = setInterval(checkAuthStatus, 60000);
+
+        return () => clearInterval(intervalId);
+    }, [user]);
+    
+    
     // Logga in användare
     async function login(username, password, id) {
         try {
