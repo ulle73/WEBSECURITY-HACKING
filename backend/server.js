@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import cookieParser from 'cookie-parser'; // För att hantera cookies
+import cookieParser from 'cookie-parser'; 
 import validator from 'validator';
 import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
@@ -11,14 +11,15 @@ import { User, GolfClub, LoginLog, ReservedProduct } from "./scheman.js";
 import './DBconfig.js'
 import { authenticateToken, verifyAdmin } from "./authMiddleware.js";
 import { handleExpiredReservations } from './reservationCleanup.js';
+import { sanitizeInput, sanitizeUserAgent } from './sanitizeMiddleware.js';
 
 
 
 const app = express();
 dotenv.config({ path: '.env.backend' });
-app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); // Tillåt CORS med credentials
+app.use(cors({ origin: 'http://localhost:5173' , credentials: true })); 
 app.use(express.json());
-app.use(cookieParser()); // Aktivera cookie-parser
+app.use(cookieParser()); 
 
 handleExpiredReservations();
 
@@ -35,22 +36,7 @@ const loginLimiter = rateLimit({
 });
 
 
-function sanitizeInput(input) {
-    if (typeof input !== "string") {
-      // Om input är undefined eller null, returnera en tom sträng eller hantera det på annat sätt
-      return "";
-    }
-    input = input.replace(/<script.*?>.*?<\/script>/gi, '');
-    return validator.whitelist(input,' <>&()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ');
-}
 
-function sanitizeUserAgent(userAgent) {
- userAgent = userAgent.replace(/<script.*?>.*?<\/script>/gi, "");
- return validator.whitelist(
-   userAgent,
-   " &()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789åäöÅÄÖ"
- ); 
-}
 
 
 // ROUTES //
