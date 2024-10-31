@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [golfClubs, setGolfClubs] = useState([]);
-  
+
 
     // Återhämta användardata från cookies
     useEffect(() => {
@@ -33,15 +33,15 @@ export function AuthProvider({ children }) {
         fetchUser();
     }, []);
 
-    
+
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
                 await axios.get(`${import.meta.env.VITE_API_URL}/check-auth`, { withCredentials: true });
-                
+
             } catch (error) {
                 if (error.response?.status === 401) {
-                    logout();  // Automatisk utloggning om session har löpt ut
+                    logout();
                 }
             }
         };
@@ -51,15 +51,48 @@ export function AuthProvider({ children }) {
 
         return () => clearInterval(intervalId);
     }, [user]);
+
+    useEffect(() => {
+        let inactivityTimer;
+
     
-    
+        if (user) {
+       
+            const resetTimer = () => {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    logout();
+                }, 2 * 60 * 1000); 
+            };
+
+            
+            window.addEventListener('mousemove', resetTimer);
+            window.addEventListener('keypress', resetTimer);
+            window.addEventListener('click', resetTimer);
+
+           
+            resetTimer();
+
+            // Rensa timers och event listeners när komponenten avmonteras eller användaren loggar ut
+            return () => {
+                clearTimeout(inactivityTimer); 
+                window.removeEventListener('mousemove', resetTimer);
+                window.removeEventListener('keypress', resetTimer);
+                window.removeEventListener('click', resetTimer);
+            };
+        }
+    }, [logout, user]); 
+ 
+
+
+
     // Logga in användare
     async function login(username, password, id) {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { username, password }, { withCredentials: true });
             const { role } = response.data;
             const { id } = response.data
-            
+
             console.log(response.data);
 
             const userData = { username, role, id };
@@ -90,7 +123,7 @@ export function AuthProvider({ children }) {
             await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, { withCredentials: true });
             setUser(null);
             setError(null);
-            
+
         } catch (error) {
             setError(error.response?.data || 'Misslyckades med att logga ut.'); // Använd felmeddelande från backend
         }
@@ -142,15 +175,15 @@ export function AuthProvider({ children }) {
             setError(null);
         }
     }, [user]);
-    
-   
-    
-    
+
+
+
+
 
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
             {loading ? <div>Loading...</div> : children}
-          
+
         </AuthContext.Provider>
     );
 }

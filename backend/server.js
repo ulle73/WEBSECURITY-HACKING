@@ -74,6 +74,7 @@ app.post('/register', async (req, res) => {
       }
 
     // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
+    console.log("username", username, "password", password)
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword, role });
     await user.save();
