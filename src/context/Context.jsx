@@ -106,9 +106,9 @@ export function AuthProvider({ children }) {
     }
 
     // Registrera ny användare
-    async function register(username, password, role = 'user') {
+    async function register(username, password) {
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/register`, { username, password, role });
+            await axios.post(`${import.meta.env.VITE_API_URL}/register`, { username, password });
             await login(username, password); // Automatisk inloggning efter registrering
             setError(null);
         } catch (error) {

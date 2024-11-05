@@ -43,11 +43,11 @@ const loginLimiter = rateLimit({
 
 // Registrera ny användare
 app.post('/register', async (req, res) => {
-    let { username, password, role } = req.body;
+    let { username, password } = req.body;
 
     // Sanera användarnamn och roll
     username = sanitizeInput(username);
-    role = validator.escape(role);
+   const role = "user";
     
   
 
