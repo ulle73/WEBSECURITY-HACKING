@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [golfClubs, setGolfClubs] = useState([]);
+    const [reservations, setReservations] = useState([])
 
 
     // Återhämta användardata från cookies
@@ -159,6 +160,24 @@ export function AuthProvider({ children }) {
             setError(error.response?.data.message || 'Misslyckades med att skicka recensionen.'); // Använd felmeddelande från backend
         }
     };
+    
+    // Hämta reservationer
+    async function fetchReservations() {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/reservations`, { withCredentials: true });
+            setReservations(response.data.reservations);
+            console.log("Fetched Reservations:", response.data.reservations); // Logga det direkt
+            setError(null);
+        } catch (err) {
+            setError(err.response?.data || 'Misslyckades med att hämta golfklubbor. Försök igen.'); // Använd felmeddelande från backend
+        }
+    }
+
+    // Nytt useEffect för att logga när reservations ändras
+    useEffect(() => {
+        console.log("STATE RESERVATIONS:", reservations);
+    }, [reservations]);
+
 
     // Kontrollera användartillstånd och hämta golfklubbor
     useEffect(() => {
@@ -181,7 +200,7 @@ export function AuthProvider({ children }) {
 
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit, fetchReservations, reservations }}>
             {loading ? <div>Loading...</div> : children}
 
         </AuthContext.Provider>

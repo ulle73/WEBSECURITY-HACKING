@@ -383,6 +383,22 @@ margin: auto;
   /* Ändra muspekaren till en hand */
 }
 
+
+
+.cart-icon {
+  font-size: 1.5rem;
+  color:#21a300;
+  transition: transform 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.cart-icon:hover {
+  color:#197c00;
+}
+
+
+
+
   @media (max-width: 768px) {
     main {
       margin: 0 10px;

@@ -144,7 +144,7 @@ app.post('/login', loginLimiter, async (req, res) => {
         user.lockUntil = undefined;
         await user.save();
 
-        const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ username: user.username, role: user.role, id: user._id }, SECRET_KEY, { expiresIn: '1h' });
         res.cookie('token', token, {
             httpOnly: true,
             
@@ -346,6 +346,23 @@ console.log("HÄR2", id)
   } catch (err) {
     console.error(err);
     res.status(500).send("Ett fel inträffade när klubban reserverades");
+  }
+});
+
+app.get("/reservations", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // Kontrollera att det här ger rätt värde
+    console.log("USER!!!", req.user)
+    console.log("User ID:", userId); // Logga userId
+
+    const reservations = await ReservedProduct.find({ userId }).sort({
+      reservedAt: -1,
+    });
+    console.log("Reservations send to frontend:", reservations); // Logga reservationer
+    res.json({ message: "Dina reserverade klubbar", reservations });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Ett fel inträffade när reservationer hämtades.");
   }
 });
 
