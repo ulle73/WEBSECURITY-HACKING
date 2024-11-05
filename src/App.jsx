@@ -11,11 +11,13 @@ import Logs from './screens/Logs';
 import ReservationPage from './screens/ReservationPage';
 
 function App() {
-    const { user, logout, error, setError } = useContext(AuthContext) || {};
+    const { user, logout, error, setError, cartItemCount } = useContext(AuthContext) || {};
     const role = user?.role;
     const navigate = useNavigate();
     console.log("USER:", user)
 
+    
+    
  
 
     return (
@@ -29,6 +31,9 @@ function App() {
             }}>
                 {user && <div className="position-fixed top-0 end-0 m-2 me-4 p-1 rounded">
                     <i onClick={()=>navigate("/reservations")} className="bi bi-cart cart-icon"></i>
+                    {cartItemCount > 0 && (
+                        <span className="cart-count">{cartItemCount}</span>
+                    )}
                 </div>}
                 
                 <h1 className="header-h1">Ryd's Golfshop</h1>

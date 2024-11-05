@@ -7,7 +7,7 @@ import ReviewBox from '../components/ReviewBox';
 import axios from 'axios'
 
 function ClubDetails() {
-  const { user, golfClubs, error, setError } = useContext(AuthContext);
+  const { user, golfClubs, error, setError, fetchReservations } = useContext(AuthContext);
   const { clubId } = useParams();
 
   if (!user) {
@@ -24,15 +24,13 @@ function ClubDetails() {
   async function handleReservation() {
     console.log('Produkt reserverad');
     console.log(user)
-
-   
-
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/reservations/${clubId}`, {
       
        id: user.id,
       
       }, { withCredentials: true });
+      await fetchReservations()
       console.log(response.data.message); 
       setError(null)
     } catch (err) {
@@ -40,6 +38,12 @@ function ClubDetails() {
       console.error("Reservation failed:", err.response.data);
     }
   }
+  
+
+  
+
+  
+  
 
   return (
     <div style={{ marginTop: '-70px' }}>

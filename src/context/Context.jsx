@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
     const [error, setError] = useState(null);
     const [golfClubs, setGolfClubs] = useState([]);
     const [reservations, setReservations] = useState([])
+    const [cartItemCount, setCartItemCount] = useState(0)
 
 
     // Återhämta användardata från cookies
@@ -95,7 +96,7 @@ export function AuthProvider({ children }) {
             const { id } = response.data
 
             console.log(response.data);
-
+            await fetchReservations()
             const userData = { username, role, id };
             setUser(userData);
             setError(null);
@@ -166,6 +167,7 @@ export function AuthProvider({ children }) {
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/reservations`, { withCredentials: true });
             setReservations(response.data.reservations);
+           
             console.log("Fetched Reservations:", response.data.reservations); // Logga det direkt
             setError(null);
         } catch (err) {
@@ -196,11 +198,14 @@ export function AuthProvider({ children }) {
     }, [user]);
 
 
+    useEffect(() => {
+        setCartItemCount(reservations.length); // Uppdaterar kundvagnsräknaren baserat på reservationer
+    }, [reservations]);
 
 
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit, fetchReservations, reservations }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, error, setError, golfClubs, fetchGolfClubs, deleteGolfClub, handleReviewSubmit, fetchReservations, reservations, cartItemCount }}>
             {loading ? <div>Loading...</div> : children}
 
         </AuthContext.Provider>
