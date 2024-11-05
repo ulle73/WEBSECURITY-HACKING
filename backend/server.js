@@ -298,6 +298,7 @@ app.get("/admin-logs", authenticateToken, verifyAdmin, async (req, res) => {
 app.post("/reservations/:clubId", authenticateToken, async (req, res) => {
   const { clubId } = req.params;
   const { date, time, id } = req.body; 
+  console.log("BILD", req.body)
 
   
   const userId = req.body.id; 
@@ -306,6 +307,8 @@ console.log("HÄR2", id)
   
   try {
     const club = await GolfClub.findById(clubId);
+    console.log("KLUBBA", club)
+     console.log("image URL:", club.imgUrl);
     if (!club) {
       return res.status(404).send("Golfklubba hittades inte");
     }
@@ -334,6 +337,7 @@ console.log("HÄR2", id)
     clubId, 
     reservedAt: new Date(),
     expiresAt: new Date(Date.now() + 2 * 60 * 1000), 
+    image: club.imgUrl,
   });
 
     await reservation.save();

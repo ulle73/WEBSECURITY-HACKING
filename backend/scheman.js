@@ -18,6 +18,7 @@ const GolfClubSchema = new mongoose.Schema({
   model: String,
   price: Number,
   quantity: Number,
+  imgUrl: String,
   reviews: [
     {
       user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -53,6 +54,7 @@ const reservedProductSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date(Date.now() + 2 * 60 * 1000), // 15 minuter framåt
   },
+  image: String,
 });
 
 
