@@ -29,7 +29,7 @@ function App() {
                 backgroundPosition: 'center',
                 position: 'relative',
             }}>
-                {user && <div className="position-fixed top-0 end-0 m-2 me-4 p-1 rounded">
+                {user && <div className="position-absolute top-0 end-0 m-2 me-4 p-1 rounded">
                     <i onClick={()=>navigate("/reservations")} className="bi bi-cart cart-icon"></i>
                     {cartItemCount > 0 && (
                         <span className="cart-count">{cartItemCount}</span>
