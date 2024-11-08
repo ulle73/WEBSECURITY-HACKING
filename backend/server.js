@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser'; 
 import validator from 'validator';
-import rateLimit from 'express-rate-limit';
 import zxcvbn from 'zxcvbn';
 import dotenv from 'dotenv' 
 import { User, GolfClub, LoginLog, ReservedProduct } from "./scheman.js";
@@ -12,6 +11,7 @@ import './DBconfig.js'
 import { authenticateToken, verifyAdmin } from "./authMiddleware.js";
 import { handleExpiredReservations } from './reservationCleanup.js';
 import { sanitizeInput, sanitizeUserAgent } from './sanitizeMiddleware.js';
+import loginLimiter from './loginLimiter.js';
 
 
 
@@ -27,13 +27,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCK_TIME = 15 * 60 * 1000;
 
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 20,
-    message: 'För många inloggningsförsök, vänligen försök igen senare.',
-     keyGenerator: (req) => req.body.username, // Begränsa baserat på användarnamn
-    skipFailedRequests: true, // Ignorera lyckade inloggningsförsök
-});
+
 
 
 
@@ -301,7 +295,7 @@ app.post("/reservations/:clubId", authenticateToken, async (req, res) => {
   console.log("BILD", req.body)
 
   
-  const userId = req.body.id; 
+  const userId = req.user.id; 
 console.log("HÄR", req.user)
 console.log("HÄR2", id)
   

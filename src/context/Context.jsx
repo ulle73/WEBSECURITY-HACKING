@@ -19,14 +19,18 @@ export function AuthProvider({ children }) {
         const fetchUser = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-page`, { withCredentials: true });
-                const { user } = response.data; // Nu returneras användardata
+                const { user } = response.data;
+                console.log("User fetched after page reload:", user); // Logga användaren efter reload
                 if (user) {
-                    setUser(user); // Sätt användarens data i state
+                    setUser(user);
                     setError(null);
+                } else {
+                    setUser(null); // Om ingen användare finns, sätt till null
                 }
             } catch (err) {
-                //setError(err.response?.data || 'Misslyckades med att hämta användardata.'); // Använd felmeddelande från backend
-                setError(null);
+                console.log("Error fetching user after page reload:", err); // Logga eventuella fel
+                setUser(null);
+                setError('Misslyckades med att hämta användardata.');
             } finally {
                 setLoading(false);
             }
@@ -36,23 +40,28 @@ export function AuthProvider({ children }) {
     }, []);
 
 
+
+
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
+                // Gör en begäran för att kontrollera autentisering
                 await axios.get(`${import.meta.env.VITE_API_URL}/check-auth`, { withCredentials: true });
-
             } catch (error) {
                 if (error.response?.status === 401) {
+                    // Om användaren inte är autentiserad, logga ut
                     logout();
                 }
             }
         };
 
-        // Kör checkAuthStatus varje 5 minuter (300000 ms)
+        // Kör checkAuthStatus varje minut (60000 ms)
         const intervalId = setInterval(checkAuthStatus, 60000);
 
+        // Rensa intervallet när komponenten demonteras
         return () => clearInterval(intervalId);
-    }, [user]);
+    }, []);  // Ingen beroende på `user`, kör bara en gång när komponenten mountas
+
 
     useEffect(() => {
         let inactivityTimer;
