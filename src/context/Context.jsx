@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
             } catch (err) {
                 console.log("Error fetching user after page reload:", err); // Logga eventuella fel
                 setUser(null);
-                setError('Error fetching user.');
+                // setError('Error fetching user.');
             } finally {
                 setLoading(false);
             }
