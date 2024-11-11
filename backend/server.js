@@ -311,7 +311,7 @@ console.log("HÄR2", id)
     if (club.quantity <= 0) {
       return res
         .status(400)
-        .send('No quantity');
+        .send('Sorry, product out of stock.');
     }
     
       const activeReservations = await ReservedProduct.countDocuments({
