@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
             } catch (err) {
                 console.log("Error fetching user after page reload:", err); // Logga eventuella fel
                 setUser(null);
-                setError('Misslyckades med att hämta användardata.');
+                setError('Error fetching user.');
             } finally {
                 setLoading(false);
             }
@@ -111,7 +111,7 @@ export function AuthProvider({ children }) {
             setError(null);
 
         } catch (err) {
-            setError(err.response?.data.message || 'Inloggning misslyckades. Kontrollera dina uppgifter.'); // Använd felmeddelande från backend
+            setError(err.response?.data.message || 'Login failed. Try again.'); // Använd felmeddelande från backend
             throw err;
         }
     }
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
             await login(username, password); // Automatisk inloggning efter registrering
             setError(null);
         } catch (error) {
-            setError(error.response?.data || 'Registrering misslyckades. Försök igen.'); // Använd felmeddelande från backend
+            setError(error.response?.data || 'Registrering failed. Try again.'); // Använd felmeddelande från backend
             throw error;
         }
     }
@@ -136,7 +136,7 @@ export function AuthProvider({ children }) {
             setError(null);
 
         } catch (error) {
-            setError(error.response?.data || 'Misslyckades med att logga ut.'); // Använd felmeddelande från backend
+            setError(error.response?.data || 'Logout failed. Try again.'); // Använd felmeddelande från backend
         }
     }
 
@@ -147,7 +147,7 @@ export function AuthProvider({ children }) {
             setGolfClubs(response.data.clubs);
             setError(null);
         } catch (err) {
-            setError(err.response?.data || 'Misslyckades med att hämta golfklubbor. Försök igen.'); // Använd felmeddelande från backend
+            setError(err.response?.data || 'Error fetching golfclubs. Try again.'); // Använd felmeddelande från backend
         }
     }
 
@@ -157,7 +157,7 @@ export function AuthProvider({ children }) {
             await axios.delete(`${import.meta.env.VITE_API_URL}/admin-page/delete/${id}`, { withCredentials: true });
             setGolfClubs(golfClubs.filter(club => club._id !== id));  // Uppdatera state
         } catch (err) {
-            setError(err.response?.data.message || 'Misslyckades med att radera golfklubben. Försök igen.'); // Använd felmeddelande från backend
+            setError(err.response?.data.message || 'Error deleting item. Try again.'); // Använd felmeddelande från backend
         }
     }
 
@@ -167,7 +167,7 @@ export function AuthProvider({ children }) {
             await axios.post(`${import.meta.env.VITE_API_URL}/clubs/${clubId}/review`, { review, rating }, { withCredentials: true });
             await fetchGolfClubs();  // Hämta uppdaterade golfklubbar efter inskickning
         } catch (error) {
-            setError(error.response?.data.message || 'Misslyckades med att skicka recensionen.'); // Använd felmeddelande från backend
+            setError(error.response?.data.message || 'Error sending review. Try again.'); // Använd felmeddelande från backend
         }
     };
     
@@ -180,7 +180,7 @@ export function AuthProvider({ children }) {
             console.log("Fetched Reservations:", response.data.reservations); // Logga det direkt
             setError(null);
         } catch (err) {
-            setError(err.response?.data || 'Misslyckades med att hämta golfklubbor. Försök igen.'); // Använd felmeddelande från backend
+            setError(err.response?.data || 'Error fetching golfclubs. Try again.'); // Använd felmeddelande från backend
         }
     }
 

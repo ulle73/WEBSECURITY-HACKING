@@ -79,7 +79,7 @@ function Logs() {
 
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin-page`, {
-          withCredentials: true,  // Skicka cookies automatiskt
+          withCredentials: true,  
         });
 
         if (response.status === 200) {

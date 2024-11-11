@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../context/Context';
 
 function LogoutButton() {
-    const { logout } = useContext(AuthContext); // Hämta logout-funktionen från kontexten
+    const { logout } = useContext(AuthContext); 
 
     return (
-        <button onClick={() => logout()}> {/* Använd arrow-funktion här */}
+        <button onClick={() => logout()}> 
             Logga ut
         </button>
     );

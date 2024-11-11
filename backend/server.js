@@ -47,7 +47,7 @@ app.post('/register', async (req, res) => {
 
     // Kontrollera om lösenordet är minst 8 tecken
     if (!validator.isLength(password, { min: 8 })) {
-        return res.status(400).send('Lösenordet måste vara minst 8 tecken.');
+        return res.status(400).send('Password needs to be at least 8 characters long.');
     }
 
     // Använd zxcvbn för att kontrollera lösenordets styrka
@@ -55,16 +55,16 @@ app.post('/register', async (req, res) => {
 
     // Om lösenordet är för svagt, eller för vanligt, avvisa det
     if (passwordStrength.score < 3) {  // 0-4 där 3-4 är bra
-        return res.status(400).send('Lösenordet är för svagt eller vanligt. Använd ett starkare lösenord.');
+        return res.status(400).send('Password too weak or too common.');
     }
     
     if(password === username){
-        return res.status(400).send('Lösenordet och användarnamn får inte vara lika.');
+        return res.status(400).send('Password and username cannot be the same.');
     }
     
       const existingUser = await User.findOne({ username });
       if (existingUser) {
-        return res.status(400).send("Användarnamnet är redan upptaget.");
+        return res.status(400).send("Username already exists.");
       }
 
     // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
@@ -225,13 +225,13 @@ app.get('/admin-page', authenticateToken, verifyAdmin, async (req, res) => {
 app.delete('/admin-page/delete/:id', authenticateToken, verifyAdmin, async (req, res) => {
     const { id } = req.params;
     if (!validator.isMongoId(id)) {
-        return res.status(400).send('Ogiltigt id-format');
+        return res.status(400).send('Unvalid Id');
     }
     try {
         await GolfClub.findByIdAndDelete(id);
         res.send('Club deleted');
     } catch (err) {
-        res.status(500).send('Failed to delete club');
+        res.status(500).send('Failed to delete club.');
     }
 });
 
@@ -241,7 +241,7 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     let { review, rating } = req.body;
 
     if (validator.isEmpty(review) || !Number.isInteger(rating) || rating < 1 || rating > 5) {
-        return res.status(400).send('Recensionen får inte vara tom och betyget måste vara mellan 1 och 5');
+        return res.status(400).send('Review cannot be empty and must be between 0 and 5.');
     }
 
     review = sanitizeInput(review);
@@ -249,7 +249,7 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
     try {
         const club = await GolfClub.findById(clubId);
         if (!club) {
-            return res.status(404).send('Golfklubba hittades inte');
+            return res.status(404).send('Golfclub not found.');
         }
 
         club.reviews.push({
@@ -259,9 +259,9 @@ app.post('/clubs/:clubId/review', authenticateToken, async (req, res) => {
         });
 
         await club.save();
-        res.status(201).send('Recension tillagd');
+        res.status(201).send('Review successfully');
     } catch (err) {
-        res.status(500).send('Ett fel inträffade när recensionen lades till');
+        res.status(500).send('Errorr saving review.');
     }
 });
 
@@ -276,13 +276,13 @@ app.get("/admin-logs", authenticateToken, verifyAdmin, async (req, res) => {
   try {
     const logs = await LoginLog.find().sort({ time: -1 }); // Hämta alla loggar, sorterade efter tid (nyaste först)
     res.json({
-      message: "Inloggningsloggar",
+      message: "Login-Logs",
       logs,
     });
   } catch (err) {
     res
       .status(500)
-      .json({ message: "Ett fel inträffade vid hämtning av loggarna" });
+      .json({ message: 'Error fetching login-logs.' });
   }
 });
 
@@ -304,14 +304,14 @@ console.log("HÄR2", id)
     console.log("KLUBBA", club)
      console.log("image URL:", club.imgUrl);
     if (!club) {
-      return res.status(404).send("Golfklubba hittades inte");
+      return res.status(404).send('Golfclub not found.');
     }
 
    
     if (club.quantity <= 0) {
       return res
         .status(400)
-        .send("Ingen tillgänglig kvantitet för golfklubban.");
+        .send('No quantity');
     }
     
       const activeReservations = await ReservedProduct.countDocuments({
@@ -322,7 +322,7 @@ console.log("HÄR2", id)
       if (activeReservations >= 5) {
         return res
           .status(400)
-          .send("Du kan endast reservera upp till 5 klubbor samtidigt.");
+          .send('Maximum number of active reservations exceeded.');
       }
 
     // Skapa en ny reservation
@@ -340,10 +340,10 @@ console.log("HÄR2", id)
     club.quantity -= 1;
     await club.save(); 
 
-    res.status(201).json({ message: "Klubba reserverad", reservation });
+    res.status(201).json({ message: 'Reservation successful', reservation });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Ett fel inträffade när klubban reserverades");
+    res.status(500).send('Error creating reservation.');
   }
 });
 
@@ -357,10 +357,10 @@ app.get("/reservations", authenticateToken, async (req, res) => {
       reservedAt: -1,
     });
     console.log("Reservations send to frontend:", reservations); // Logga reservationer
-    res.json({ message: "Dina reserverade klubbar", reservations });
+    res.json({ message: 'Your reservations: ', reservations });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Ett fel inträffade när reservationer hämtades.");
+    res.status(500).send('Error fetcing reservations.');
   }
 });
 
