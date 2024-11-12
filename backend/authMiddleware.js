@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 // Verifiera JWT-token från cookies
 export function authenticateToken(req, res, next) {
   const token = req.cookies.token;
-  console.log('TOKEN:', token)
+
   if (!token) return res.sendStatus(401);
 
   jwt.verify(token, SECRET_KEY, (err, user) => {

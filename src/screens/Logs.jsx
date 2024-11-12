@@ -48,7 +48,7 @@ function Logs() {
           userAgent: simplifyUserAgent(log.userAgent),
         }));
 
-        console.log("Fetched logs:", simplifiedLogs); // Felsökningslogg för att se innehållet
+        //console.log("Fetched logs:", simplifiedLogs); // Felsökningslogg för att se innehållet
         setLogs(simplifiedLogs);
         setError(null);
       } catch (err) {

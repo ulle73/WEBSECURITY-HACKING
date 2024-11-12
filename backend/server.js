@@ -10,7 +10,7 @@ import { User, GolfClub, LoginLog, ReservedProduct } from "./scheman.js";
 import './DBconfig.js'
 import { authenticateToken, verifyAdmin } from "./authMiddleware.js";
 import { handleExpiredReservations } from './reservationCleanup.js';
-import { sanitizeInput, sanitizeUserAgent } from './sanitizeMiddleware.js';
+import { sanitizeInput, sanitizeUserAgent, validateUsername } from './sanitizeMiddleware.js';
 import loginLimiter from './loginLimiter.js';
 
 
@@ -36,158 +36,190 @@ const LOCK_TIME = 15 * 60 * 1000;
 // ROUTES //
 
 // Registrera ny användare
-app.post('/register', async (req, res) => {
-    let { username, password } = req.body;
+app.post("/register", async (req, res) => {
+  let { username, password } = req.body;
 
-    // Sanera användarnamn och roll
+  try {
+    // Sanera användarnamnet
     username = sanitizeInput(username);
-   const role = "user";
-    
-  
 
-    // Kontrollera om lösenordet är minst 8 tecken
+    // Validera användarnamnet och fånga eventuella fel
+    try {
+      validateUsername(username);
+    } catch (error) {
+      return res.status(400).send(error.message); // Skicka tillbaka felmeddelande utan att krascha servern
+    }
+
+    // Kontrollera lösenordets längd
     if (!validator.isLength(password, { min: 8 })) {
-        return res.status(400).send('Password needs to be at least 8 characters long.');
+      return res
+        .status(400)
+        .send("Password needs to be at least 8 characters long.");
     }
 
-    // Använd zxcvbn för att kontrollera lösenordets styrka
+    // Kontrollera lösenordets styrka
     const passwordStrength = zxcvbn(password);
+    if (passwordStrength.score < 3) {
+      return res.status(400).send("Password too weak or too common.");
+    }
 
-    // Om lösenordet är för svagt, eller för vanligt, avvisa det
-    if (passwordStrength.score < 3) {  // 0-4 där 3-4 är bra
-        return res.status(400).send('Password too weak or too common.');
+    // Kontrollera om användarnamnet och lösenordet är desamma
+    if (password === username) {
+      return res.status(400).send("Password and username cannot be the same.");
     }
     
-    if(password === username){
-        return res.status(400).send('Password and username cannot be the same.');
-    }
     
-      const existingUser = await User.findOne({ username });
-      if (existingUser) {
-        return res.status(400).send("Username already exists.");
-      }
 
-    // Om lösenordet är tillräckligt starkt, fortsätt med registreringen
-    console.log("username", username, "password", password)
+    // Kontrollera om användarnamnet redan finns
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).send("Username already exists.");
+    }
+
+    // Om allt är ok, hasha lösenordet och skapa användaren
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword, role });
+    const user = new User({ username, password: hashedPassword, role: "user" });
     await user.save();
 
-    res.send('User registered');
+    res.send("User registered");
+  } catch (error) {
+    // Om något annat går fel, skicka ett lämpligt felmeddelande
+    console.error(error); // Logga felet för serverövervakning
+    return res
+      .status(400)
+      .send(error.message || "An error occurred during registration.");
+  }
 });
+
 
 
 // Logga in användare och generera JWT-token
-app.post('/login', loginLimiter, async (req, res) => {
-    let { username, password } = req.body;
-    username = sanitizeInput(username);
-    console.log("LOGIN TRY")
-    
-    
-     const ipAddress = req.ip;
-     const userAgent = sanitizeUserAgent(req.headers["user-agent"])
-  
-     
-        const time = new Date()
-          .toLocaleString("sv-SE", {
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-          .replace(" ", "-");
+app.post("/login", loginLimiter, async (req, res) => {
+  let { username, password } = req.body;
+  username = sanitizeInput(username);
+  console.log("LOGIN TRY");
 
+  const ipAddress = req.ip;
+  const userAgent = sanitizeUserAgent(req.headers["user-agent"]);
+
+  const time = new Date()
+    .toLocaleString("sv-SE", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+    .replace(" ", "-");
+
+  try {
+    // Validering av användarnamn
+    validateUsername(username);
+
+    // Hitta användaren i databasen
     const user = await User.findOne({ username });
     if (!user) {
-         await LoginLog.create({ username, time, success: false, ipAddress, userAgent });
-        return res
-          .status(400)
-          .json({
-            message: "Invalid credentials",
-            username,
-            time,
-            ipAddress,
-            userAgent,
-          });
+      await LoginLog.create({
+        username,
+        time,
+        success: false,
+        ipAddress,
+        userAgent,
+      });
+      return res.status(400).json({
+        message: "Invalid credentials",
+        username,
+        time,
+        ipAddress,
+        userAgent,
+      });
     }
 
+    // Kontrollera om användaren är låst
     if (user.isLocked()) {
-        await LoginLog.create({
-          username,
-          time,
-          success: false,
-          message: "Account locked.",
-          ipAddress,
-          userAgent,
-        });
-        return res
-          .status(403)
-          .json({
-            message: "Account locked. Please try again later.",
-            username,
-            time,
-            ipAddress,
-            userAgent,
-          });
+      await LoginLog.create({
+        username,
+        time,
+        success: false,
+        message: "Account locked.",
+        ipAddress,
+        userAgent,
+      });
+      return res.status(403).json({
+        message: "Account locked. Please try again later.",
+        username,
+        time,
+        ipAddress,
+        userAgent,
+      });
     }
 
+    // Jämför lösenord
     const match = await bcrypt.compare(password, user.password);
     if (match) {
-        user.loginAttempts = 0;
-        user.lockUntil = undefined;
-        await user.save();
+      user.loginAttempts = 0;
+      user.lockUntil = undefined;
+      await user.save();
 
-        const token = jwt.sign({ username: user.username, role: user.role, id: user._id }, SECRET_KEY, { expiresIn: '1h' });
-        res.cookie('token', token, {
-            httpOnly: true,
-            
-            maxAge: 5 * 60 * 1000 
-        });
-        await LoginLog.create({
-          username,
-          time,
-          success: true,
-          ipAddress,
-          userAgent,
-        });
-        return res
-          .status(200)
-          .json({
-            message: "Sucessful login",
-            role: user.role,
-            username,
-            time,
-            ipAddress,
-            userAgent,
-            id: user.id
-          });
+      const token = jwt.sign(
+        { username: user.username, role: user.role, id: user._id },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 1000, 
+      });
+
+      await LoginLog.create({
+        username,
+        time,
+        success: true,
+        ipAddress,
+        userAgent,
+      });
+
+      return res.status(200).json({
+        message: "Successful login",
+        role: user.role,
+        username,
+        time,
+        ipAddress,
+        userAgent,
+        id: user.id,
+      });
     } else {
-        user.loginAttempts += 1;
-        if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-            const lockTime = Date.now() + LOCK_TIME;
-            const swedishTime = new Date(lockTime + 2 * 60 * 60 * 1000);
-            user.lockUntil = swedishTime.toISOString().substring(0, 19);
-        }
-        await user.save();
-        await LoginLog.create({
-          username,
-          time,
-          success: false,
-          ipAddress,
-          userAgent,
-        });
-        return res
-          .status(400)
-          .json({
-            message: "Invalid credentials",
-            username,
-            time,
-            ipAddress,
-            userAgent,
-          });
+      user.loginAttempts += 1;
+      if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        const lockTime = Date.now() + LOCK_TIME;
+        const swedishTime = new Date(lockTime + 2 * 60 * 60 * 1000);
+        user.lockUntil = swedishTime.toISOString().substring(0, 19);
+      }
+      await user.save();
+      await LoginLog.create({
+        username,
+        time,
+        success: false,
+        ipAddress,
+        userAgent,
+      });
+      return res.status(400).json({
+        message: "Invalid credentials",
+        username,
+        time,
+        ipAddress,
+        userAgent,
+      });
     }
+  } catch (error) {
+    console.error("Error during login:", error); // Logga eventuella fel
+    return res.status(500).json({
+      message: "Invalid credentials",
+      error: error.message || error,
+    });
+  }
 });
+
 
 
 
