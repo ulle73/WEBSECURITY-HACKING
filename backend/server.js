@@ -41,14 +41,10 @@ app.post("/register", async (req, res) => {
 
   try {
     // Sanera användarnamnet
+    validateUsername(username);
     username = sanitizeInput(username);
 
-    // Validera användarnamnet och fånga eventuella fel
-    try {
-      validateUsername(username);
-    } catch (error) {
-      return res.status(400).send(error.message); // Skicka tillbaka felmeddelande utan att krascha servern
-    }
+    
 
     // Kontrollera lösenordets längd
     if (!validator.isLength(password, { min: 8 })) {
